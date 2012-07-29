@@ -1,0 +1,112 @@
+#ifndef __BART_NOTIFYWIDGET__
+#define __BART_NOTIFYWIDGET__
+
+#include <QtGui>
+#include <QtDBus>
+
+class NotificationModel;
+
+Q_DECLARE_METATYPE(QVariantMap)
+
+class NotificationModelAdaptor: public QDBusAbstractAdaptor
+{
+	Q_OBJECT
+	Q_CLASSINFO("D-Bus Interface", "org.freedesktop.Notifications")
+public:
+	NotificationModelAdaptor(NotificationModel* w);
+
+public slots:
+
+	QStringList GetCapabilities();
+	void GetServerInformation(QString &name, QString &vendor, QString &version);
+	void GetServerInformation(QString &name, QString &vendor, QString &version, QString &spec);
+
+	uint Notify(const QString &app_name, uint replaces_id, const QString &app_icon, 
+		const QString &summary, const QString &body, const QStringList &actions,
+	       	const QVariantMap &hints, int expire_timeout);
+
+	void CloseNotification(quint32 id);
+
+signals:
+	void NotificationClosed(quint32 id, quint32 reason);
+	void ActionInvoked(quint32 id, const QString& reason);
+
+private:
+	NotificationModel *widget;
+
+};
+
+class NotificationModel: public QAbstractListModel
+{
+	Q_OBJECT
+	Q_PROPERTY( int count READ rowCount NOTIFY countChanged )
+
+	struct notification {
+		QString app;
+		QString icon;
+		QString summary;
+		QString body;
+		int timeout;
+		bool critical;
+	};
+
+public:
+	enum NotificationRole {
+		ApplicationRole = Qt::UserRole+1,
+		IconRole,
+		SummaryRole,
+		BodyRole
+	};
+
+	NotificationModel(QObject *parent=0);
+	bool isRunning() { return m_running; }
+
+	// Model
+	virtual int rowCount(const QModelIndex& = QModelIndex()) const;
+	virtual QVariant data(const QModelIndex&, int) const;
+
+
+	bool notificationsDisabled();
+
+	QString htmlToPlainText(const QString&);
+
+public slots:
+	QStringList GetCapabilities();
+	void CloseNotification(quint32 id, quint32 reason=3);
+	quint32 Notify(const QString& app, uint replace, const QString& icon, 
+			const QString& summary, const QString& body,
+			const QStringList& actions, const QMap<QString, QVariant> &hints,
+			int timeout);
+	void setNotificationsDisabled(bool);
+
+	quint32 Notify(const QString& app, const QString& summary, const QString& body, int timeout);
+
+signals:
+	// For DBus
+	void NotificationClosed(quint32 id, quint32 reason);
+	void ActionInvoked(uint id, const QString& reason);
+
+	// Simple signals to display the latest
+	// notifications
+	void latestNotificationChanged( const QString& application, const QString& summary, const QString& body, const QString& icon);
+	void closeNotification();
+	void latestCriticalChanged( const QString& application, const QString& summary, const QString& body, const QString& icon);
+	void closeCritical();
+	void countChanged();
+
+protected:
+	void log(struct NotificationModel::notification&);
+
+private:
+	quint32 version;
+	QMutex lock;
+	QList<quint32> notificationsOrder;
+	QHash<quint32, struct NotificationModel::notification> notifications;
+	quint32 m_lastNotification, m_lastCriticalNotification;
+	bool m_running, m_notificationsDisabled;
+	QTextStream* logFile;
+	QFile *logDevice;
+};
+
+
+#endif

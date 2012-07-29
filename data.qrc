@@ -1,0 +1,14 @@
+
+
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file>icons/dialog-information.png</file>
+     <file>icons/kabal.png</file>
+
+     <file>qml/kabal.qml</file>
+     <file>qml/Notification.qml</file>
+     <file>qml/Style.qml</file>
+     <file>qml/Button.qml</file>
+     <file>qml/StatusBar.qml</file>
+ </qresource>
+ </RCC>
