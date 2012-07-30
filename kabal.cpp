@@ -39,8 +39,8 @@ Kabal::Kabal(QObject *parent)
 
 		logWidget = new QWebView();
 		logWidget->settings()->setUserStyleSheetUrl(QUrl("qrc:///css/log.css"));
+		logWidget->settings()->setDefaultTextEncoding("utf-8");
 		logWidget->load(QUrl::fromLocalFile(model.logFilePath()));
-
 		connect(&fsWatcher, SIGNAL(fileChanged(QString)),
 			logWidget, SLOT(reload()));
 	}

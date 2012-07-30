@@ -86,6 +86,7 @@ void NotificationModel::setLogFilePath(const QString& path)
 		qDebug() << "Unable to open logFile";
 	} else {
 		logFile = new QTextStream(logDevice);
+		logFile->setCodec("UTF-8");
 	}
 
 
