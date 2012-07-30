@@ -31,9 +31,8 @@ Kabal::Kabal(QObject *parent)
 
 
 	model.setLogFilePath(
-		QDir(QDir::home().absoluteFilePath("kabal")).absoluteFilePath("kabal.html"));
+		QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("kabal.html"));
 
-	// FIXME: load path from notification model
 	if ( !model.logFilePath().isEmpty() ) {
 		fsWatcher.addPath(model.logFilePath());
 
