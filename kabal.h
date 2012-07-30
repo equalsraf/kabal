@@ -19,6 +19,7 @@ protected:
 
 public slots:
 	void setNotificationsDisabled(bool);
+	void showLogViewer();
 
 protected slots:
 	void screenCountChanged(int);

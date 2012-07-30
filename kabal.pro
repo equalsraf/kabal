@@ -12,5 +12,5 @@ QT += dbus declarative webkit
 RESOURCES = data.qrc
 
 # Input
-HEADERS += notificationmodel.h iconprovider.h notificationtimeout.h kabal.h
-SOURCES += main.cpp notificationmodel.cpp iconprovider.cpp notificationtimeout.cpp kabal.cpp
+HEADERS += notificationmodel.h iconprovider.h notificationtimeout.h kabal.h imageprovider.h
+SOURCES += main.cpp notificationmodel.cpp iconprovider.cpp notificationtimeout.cpp kabal.cpp imageprovider.cpp

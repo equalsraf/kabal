@@ -2,6 +2,47 @@
 
 #include "notificationtimeout.h"
 
+// The "image-data" and "icon_data" hints should be a raw image data structure of signature
+// (iiibiiay) which describes the width, height, rowstride, has alpha, bits per sample, 
+// channels and image data respectively.
+struct ImageData {
+	qint32 width;
+	qint32 height;
+	qint32 rowstride;
+	bool has_alpha;
+	qint32 bits_per_sample;
+	qint32 channels;
+	QByteArray data;
+};
+
+QDBusArgument &operator<<(QDBusArgument &argument, const ImageData &img)
+{
+	argument.beginStructure();
+	argument << img.width;
+	argument << img.height;
+	argument << img.rowstride;
+	argument << img.has_alpha;
+	argument << img.bits_per_sample;
+	argument << img.channels;
+	argument << img.data;
+	argument.endStructure();
+	return argument;
+}
+const QDBusArgument &operator>>(const QDBusArgument &argument, struct ImageData &img)
+{
+	argument.beginStructure();
+	argument >> img.width;
+	argument >> img.height;
+	argument >> img.rowstride;
+	argument >> img.has_alpha;
+	argument >> img.bits_per_sample;
+	argument >> img.channels;
+	argument >> img.data;
+	argument.endStructure();
+	return argument;
+}
+
+Q_DECLARE_METATYPE(ImageData);
 
 //
 // DBus adaptor
@@ -58,6 +99,7 @@ NotificationModel::NotificationModel(QObject *parent)
 	m_notificationsDisabled(false),
 	logFile(0), logDevice(0)
 {
+	qDBusRegisterMetaType<ImageData>();
 	QHash<int, QByteArray> roles;
 	roles[ApplicationRole] = "application";
 	roles[IconRole] = "icon";
@@ -88,8 +130,6 @@ void NotificationModel::setLogFilePath(const QString& path)
 		logFile = new QTextStream(logDevice);
 		logFile->setCodec("UTF-8");
 	}
-
-
 }
 
 
@@ -106,6 +146,7 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 		return;
 	}
 
+	qDebug() << __func__ << id;
 	QMutexLocker locker(&lock);
 	int idx = notificationsOrder.indexOf(id);
 	beginRemoveRows(QModelIndex(), idx, idx);
@@ -127,16 +168,38 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 	}
 }
 
+
+QImage NotificationModel::getImageFromHints(const QMap<QString, QVariant>& hints)
+{
+	QVariant val;
+
+	if ( hints.contains("image-data") ) {
+		val = hints.value("image-data");
+	} else if ( hints.contains("image_data") ) {
+		val = hints.value("image_data");
+	} else {
+		return QImage();
+	}
+
+	if ( val.canConvert<QDBusArgument>() ) {
+		QDBusArgument arg = val.value<QDBusArgument>();
+		ImageData data;
+		arg >> data;
+		return QImage((uchar*)data.data.constData(), data.width, data.height, QImage::Format_ARGB32).rgbSwapped();
+	}
+
+	return QImage();
+}
+
 quint32 NotificationModel::Notify(const QString& app, uint replace, const QString& icon, 
 		const QString& summary, const QString& body,
 		const QStringList& actions, const QMap<QString, QVariant> &hints,
 		int timeout) {
 
-	if ( timeout == -1 || (timeout > 0 && timeout < 7000) ) {
-		timeout = 10000;
+	if ( timeout == -1 || (timeout > 0 && timeout < 1000) ) {
+		timeout = 7000;
 	}
 
-	qDebug() << app << summary << body << icon << hints << timeout;
 	bool critical =  (hints.value("urgency").toUInt() == 2);
 
 	if ( replace ) {
@@ -149,30 +212,28 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 		appIcon = app;
 	}
 
+	// Add notification
+	QMutexLocker locker(&lock);
+	int v = version++; // FIXME: THIS WILL OVERFLOW
+
 	// Extract image-data
-	if ( hints.contains("image_data") ) {
-		QByteArray img = hints.value("image_data").toByteArray();
-
-		// The "image-data" and "icon_data" hints should be a raw image data structure of signature
-		// (iiibiiay) which describes the width, height, rowstride, has alpha, bits per sample, 
-		// channels and image data respectively.
-
-		qDebug() <<__func__ << img.size();
+	QString iconPath;
+	QImage img = getImageFromHints(hints);
+	if ( img.isNull() ) {
+		iconPath = "image://icons/" + appIcon;
+	} else {
+		iconPath = "image://images/" + QString::number(v);
 	}
 
 	struct NotificationModel::notification n = {
 			app, 
-			"image://icons/" + appIcon, 
+			iconPath,
+			img,
 			htmlToPlainText(summary),
 			htmlToPlainText(body),
 			timeout,
 			critical
 		};
-
-	// Add notification
-	QMutexLocker locker(&lock);
-	int v = version++; // FIXME: THIS WILL OVERFLOW
-
 	// Write to log file
 	log(n);
 
@@ -197,6 +258,7 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 		emit latestNotificationChanged(n.app, n.summary, n.body, n.icon);
 	}
 
+	qDebug() << app << summary << body << icon << hints << timeout << v;
 	emit countChanged();
 	return v;
 }
@@ -237,6 +299,8 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
 		return n.app;
 	case IconRole:
 		return n.icon;
+	case ImageRole:
+		return n.image;
 	case Qt::DisplayRole:
 	case SummaryRole:
 		return n.summary;
@@ -273,5 +337,11 @@ QString NotificationModel::htmlToPlainText(const QString& html)
 	return text.toPlainText();
 }
 
-
+/**
+ * Get image for notification with the given id
+ */
+QImage NotificationModel::getImage(qint32 id)
+{
+	return notifications.value(id).image;
+}
 

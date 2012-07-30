@@ -45,6 +45,7 @@ class NotificationModel: public QAbstractListModel
 	struct notification {
 		QString app;
 		QString icon;
+		QImage image;
 		QString summary;
 		QString body;
 		int timeout;
@@ -56,7 +57,8 @@ public:
 		ApplicationRole = Qt::UserRole+1,
 		IconRole,
 		SummaryRole,
-		BodyRole
+		BodyRole,
+		ImageRole
 	};
 
 	NotificationModel(QObject *parent=0);
@@ -66,13 +68,14 @@ public:
 	virtual int rowCount(const QModelIndex& = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex&, int) const;
 
-
 	bool notificationsDisabled();
 
 	QString htmlToPlainText(const QString&);
 
 	QString logFilePath() { return m_logFilePath; }
 	void setLogFilePath(const QString &path);
+
+	QImage getImage(qint32 id);
 
 public slots:
 	QStringList GetCapabilities();
@@ -100,6 +103,7 @@ signals:
 
 protected:
 	void log(struct NotificationModel::notification&);
+	QImage getImageFromHints(const QMap<QString, QVariant>& hints);
 
 private:
 	quint32 version;

@@ -3,6 +3,7 @@
 #include <QDeclarativeEngine>
 #include "kabal.h"
 #include "iconprovider.h"
+#include "imageprovider.h"
 
 #include <QWebFrame>
 
@@ -50,6 +51,7 @@ QDeclarativeView* Kabal::createWidget()
 	// Widget
 	QDeclarativeView *view = new QDeclarativeView;
 	view->engine()->addImageProvider(QLatin1String("icons"), new IconProvider());
+	view->engine()->addImageProvider(QLatin1String("images"), new ImageProvider(&model));
 	view->setWindowFlags(Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
 
 	// Export methods
