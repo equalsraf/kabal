@@ -7,7 +7,7 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
-QT += dbus declarative
+QT += dbus declarative webkit
 
 RESOURCES = data.qrc
 

@@ -40,6 +40,7 @@ class NotificationModel: public QAbstractListModel
 {
 	Q_OBJECT
 	Q_PROPERTY( int count READ rowCount NOTIFY countChanged )
+	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
 
 	struct notification {
 		QString app;
@@ -69,6 +70,9 @@ public:
 	bool notificationsDisabled();
 
 	QString htmlToPlainText(const QString&);
+
+	QString logFilePath() { return m_logFilePath; }
+	void setLogFilePath(const QString &path);
 
 public slots:
 	QStringList GetCapabilities();
@@ -106,6 +110,7 @@ private:
 	bool m_running, m_notificationsDisabled;
 	QTextStream* logFile;
 	QFile *logDevice;
+	QString m_logFilePath;
 };
 
 

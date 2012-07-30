@@ -73,12 +73,21 @@ NotificationModel::NotificationModel(QObject *parent)
 		return;
 	}
 
-	logDevice = new QFile(QDir::home().absoluteFilePath("kabal.log"), this);
+}
+
+void NotificationModel::setLogFilePath(const QString& path)
+{
+	m_logFilePath = path;
+
+	QDir().mkpath(QFileInfo(path).dir().absolutePath());
+
+	logDevice = new QFile(logFilePath(), this);
 	if ( !logDevice->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) ) {
 		qDebug() << "Unable to open logFile";
 	} else {
 		logFile = new QTextStream(logDevice);
 	}
+
 
 }
 
@@ -202,7 +211,7 @@ void NotificationModel::log(struct NotificationModel::notification& n)
 		return;
 	}
 
-	*logFile << QString("\n<div class=\"notification\">\n<h3>%1 [%2]</h3>\n<p>\n%3\n</p>\n</div>\n").arg(n.summary).arg(n.app).arg(n.body);
+	*logFile << QString("\n<div class=\"notification\">\n<h3>%1 from %2</h3>\n<p>\n%3\n</p>\n</div>\n").arg(n.summary).arg(n.app).arg(n.body);
 	logFile->flush();
 	logDevice->flush();
 }

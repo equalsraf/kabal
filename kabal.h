@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include <QDeclarativeView>
+#include <QWebView>
 
 #include "notificationmodel.h"
 
@@ -28,6 +29,8 @@ private:
 	QSystemTrayIcon tray;
 	NotificationModel model;
 	QList <QDeclarativeView*> widgets;
+	QWebView *logWidget;
+	QFileSystemWatcher fsWatcher;
 };
 
 #endif

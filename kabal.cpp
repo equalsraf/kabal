@@ -4,9 +4,10 @@
 #include "kabal.h"
 #include "iconprovider.h"
 
+#include <QWebFrame>
 
 Kabal::Kabal(QObject *parent)
-:QObject(parent)
+:QObject(parent), logWidget(0)
 {
 	// System Tray
 	tray.setIcon(QIcon(":icons/kabal.png"));
@@ -27,6 +28,22 @@ Kabal::Kabal(QObject *parent)
 		this, SLOT(screenCountChanged(int)));
 
 	screenCountChanged(desktop->screenCount());
+
+
+	model.setLogFilePath(
+		QDir(QDir::home().absoluteFilePath("kabal")).absoluteFilePath("kabal.html"));
+
+	// FIXME: load path from notification model
+	if ( !model.logFilePath().isEmpty() ) {
+		fsWatcher.addPath(model.logFilePath());
+
+		logWidget = new QWebView();
+		logWidget->settings()->setUserStyleSheetUrl(QUrl("qrc:///css/log.css"));
+		logWidget->load(QUrl::fromLocalFile(model.logFilePath()));
+
+		connect(&fsWatcher, SIGNAL(fileChanged(QString)),
+			logWidget, SLOT(reload()));
+	}
 }
 
 QDeclarativeView* Kabal::createWidget()
@@ -80,12 +97,11 @@ void Kabal::setNotificationsDisabled(bool disabled)
 
 void Kabal::systrayActivated(QSystemTrayIcon::ActivationReason why)
 {
-	if ( why != QSystemTrayIcon::Trigger || model.rowCount() == 0 ) {
+	if ( why != QSystemTrayIcon::Trigger || !logWidget) {
 		return;
 	}
 
-	foreach(QDeclarativeView *view, widgets) {
-	//	view->show();
-	}
+	logWidget->reload();
+	logWidget->setVisible(!logWidget->isVisible());
 }
 
