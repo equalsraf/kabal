@@ -7,7 +7,8 @@
 
 
 Kabal::Kabal(const QUrl& source, QObject *parent)
-:QObject(parent), m_qmlSource(QUrl("qrc:///qml/kabal.qml"))
+:QObject(parent), m_qmlSource(QUrl("qrc:///qml/kabal.qml")),
+	settings(QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("config"), QSettings::IniFormat)
 {
 	if ( source.isValid() ) {
 		m_qmlSource = source;
@@ -55,7 +56,6 @@ QDeclarativeView* Kabal::createWidget()
 
 	// Load root qml object
 	view->setSource(m_qmlSource);
-	view->move(10, 10);
 
 	return view;
 }
@@ -73,10 +73,14 @@ void Kabal::screenCountChanged(int count)
 		}
 	}
 	
+	int x, y;
+	x = settings.value("x", 10).toInt();
+	y = settings.value("y", 10).toInt();
+
 	// Reposition remaining widgets
 	for (int i=0; i<count; i++) {
 		QRect screen = QApplication::desktop()->screenGeometry(i);
-		widgets.at(i)->move(screen.left() + 10, screen.top() + 10);
+		widgets.at(i)->move(screen.left() + x, screen.top() + y);
 	}
 }
 

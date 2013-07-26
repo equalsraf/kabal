@@ -30,6 +30,7 @@ private:
 	NotificationModel model;
 	QList <QDeclarativeView*> widgets;
 	QFileSystemWatcher fsWatcher;
+	QSettings settings;
 };
 
 #endif
