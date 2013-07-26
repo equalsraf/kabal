@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QDeclarativeView>
-#include <QWebView>
 
 #include "notificationmodel.h"
 
@@ -11,7 +10,7 @@ class Kabal: public QObject
 {
 	Q_OBJECT
 public:
-	Kabal(QObject *parent=0);
+	Kabal(const QUrl& source=QUrl(), QObject *parent=0);
 	bool isRunning() { return model.isRunning(); }
 
 protected:
@@ -19,18 +18,17 @@ protected:
 
 public slots:
 	void setNotificationsDisabled(bool);
-	void showLogViewer();
 
 protected slots:
 	void screenCountChanged(int);
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
 
 private:
+	QUrl m_qmlSource;
 	QMenu menu;
 	QSystemTrayIcon tray;
 	NotificationModel model;
 	QList <QDeclarativeView*> widgets;
-	QWebView *logWidget;
 	QFileSystemWatcher fsWatcher;
 };
 

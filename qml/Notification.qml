@@ -1,14 +1,7 @@
-import Qt 4.7
 import QtQuick 1.1
 
 Rectangle {
 	id: notification
-	property string summary : ""
-	property string body : ""
-	property string icon : ""
-	property bool animateUpdates : true
-
-	//visible: summary || icon || body
 
 	Style { id: style}
 	color: 'transparent'
@@ -23,6 +16,7 @@ Rectangle {
 
 	Image {
 		id: iconImage
+        	source: icon
 		width: parent.height
 		fillMode: Image.PreserveAspectFit
 
@@ -34,6 +28,7 @@ Rectangle {
 
 	Text {
 		id: summaryText
+		text: summary
 		font.bold: true
 		color: style.textColor
 		elide: Text.ElideRight
@@ -47,6 +42,7 @@ Rectangle {
 	}
 	Text {
 		id: bodyText
+		text: body
 		textFormat: Text.PlainText
 		color: style.textColor
 		elide: Text.ElideRight
@@ -59,30 +55,12 @@ Rectangle {
 		anchors.top: summaryText.bottom
 	}
 
+	MouseArea {
+		anchors.fill: parent
+		onClicked: {
+			notificationModel.CloseNotification(uid)
+			}
+	}
 	} // Container
 
-	SequentialAnimation {
-		id: animation
-		NumberAnimation { target: notification; properties: "opacity"; from: 1; to : 0 }
-		ScriptAction { script: {
-				summaryText.text = notification.summary;
-				bodyText.text = notification.body;
-				iconImage.source = notification.icon;
-			}}
-		NumberAnimation { target: notification; properties: "opacity"; from: 0; to : 1 }
-	}
-
-	function updateNotification(summary, body, icon) {
-		notification.summary = summary;
-		notification.icon = icon;
-		notification.body = body;
-
-		if ( notification.animateUpdates ) {
-			animation.restart();
-		} else {
-			summaryText.text = notification.summary;
-			bodyText.text = notification.body;
-			iconImage.source = notification.icon;
-		}
-	}
 }

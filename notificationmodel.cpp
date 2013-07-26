@@ -50,7 +50,7 @@ Q_DECLARE_METATYPE(ImageData);
 NotificationModelAdaptor::NotificationModelAdaptor(NotificationModel* w)
 : QDBusAbstractAdaptor((QObject* )w), widget(w)
 {
-	connect(w, SIGNAL(NotificationClosed(quint32, quint32)),
+	connect(w, SIGNAL(notificationClosed(quint32, quint32)),
 		this, SIGNAL(NotificationClosed(quint32, quint32)));
 }
 
@@ -62,7 +62,7 @@ void NotificationModelAdaptor::GetServerInformation(QString& name, QString& vend
 {
 	name = "Kabal";
 	vendor = "equalsraf";
-	version = "0.0alpha";
+	version = "0.1";
 }
 
 void NotificationModelAdaptor::GetServerInformation(QString& name, QString& vendor, QString& version, QString& spec)
@@ -92,9 +92,7 @@ uint NotificationModelAdaptor::Notify(const QString &app_name, uint replaces_id,
 
 
 NotificationModel::NotificationModel(QObject *parent)
-:QAbstractListModel(parent), version(1),
-	m_lastCriticalNotification(0),
-	m_lastNotification(0), 
+:QAbstractListModel(parent), idcounter(1),
 	m_running(true),
 	m_notificationsDisabled(false),
 	logFile(0), logDevice(0)
@@ -105,6 +103,8 @@ NotificationModel::NotificationModel(QObject *parent)
 	roles[IconRole] = "icon";
 	roles[SummaryRole] = "summary";
 	roles[BodyRole] = "body";
+	roles[UidRole] = "uid";
+	roles[CriticalRole] = "critical";
 	setRoleNames(roles);
 
 	new NotificationModelAdaptor(this);
@@ -124,7 +124,7 @@ void NotificationModel::setLogFilePath(const QString& path)
 	QDir().mkpath(QFileInfo(path).dir().absolutePath());
 
 	logDevice = new QFile(logFilePath(), this);
-	if ( !logDevice->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) ) {
+	if ( !logDevice->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append) ) {
 		qDebug() << "Unable to open logFile";
 	} else {
 		logFile = new QTextStream(logDevice);
@@ -146,26 +146,17 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 		return;
 	}
 
-	qDebug() << __func__ << id;
-	QMutexLocker locker(&lock);
 	int idx = notificationsOrder.indexOf(id);
 	beginRemoveRows(QModelIndex(), idx, idx);
 	notificationsOrder.removeOne(id);
-	struct NotificationModel::notification gone = notifications.take(id);
+	struct notification n = notifications.take(id);
+	if ( n.critical) {
+		criticalNotificationsOrder.removeOne(id);
+	}
 	endRemoveRows();
-	emit countChanged();
-	emit NotificationClosed(id, reason);
 
-	if ( id != m_lastNotification && id != m_lastCriticalNotification ) {
-		return;
-	}
-
-	// If we got here there is nothing to show
-	if ( gone.critical ) {
-		closeCritical();
-	} else {
-		closeNotification();
-	}
+	emit notificationClosed(id, reason);
+	emit notificationCountChanged(notifications.size());
 }
 
 
@@ -191,6 +182,30 @@ QImage NotificationModel::getImageFromHints(const QMap<QString, QVariant>& hints
 	return QImage();
 }
 
+
+void NotificationModel::incrementCounter()
+{
+
+    if ( idcounter != INT_MAX ) {
+		idcounter++;
+		return;
+	}
+
+    if (notifications.size() == INT_MAX) {
+		// Remove some notifications NOW
+		quint32 oldest;
+		if ( notificationsOrder.size()) {
+			oldest = notificationsOrder.first();
+		} else {
+			oldest = criticalNotificationsOrder.first();
+		}
+		CloseNotification(oldest);
+	}
+	idcounter = 1;
+	while ( notifications.contains(idcounter++) );
+	
+}
+
 quint32 NotificationModel::Notify(const QString& app, uint replace, const QString& icon, 
 		const QString& summary, const QString& body,
 		const QStringList& actions, const QMap<QString, QVariant> &hints,
@@ -201,6 +216,7 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	bool critical =  (hints.value("urgency").toUInt() == 2);
+	qDebug() << __func__ << actions;
 
 	if ( replace ) {
 		CloseNotification(replace);
@@ -213,8 +229,8 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	// Add notification
-	QMutexLocker locker(&lock);
-	int v = version++; // FIXME: THIS WILL OVERFLOW
+	int v = idcounter;
+	incrementCounter();
 
 	// Extract image-data
 	QString iconPath;
@@ -226,6 +242,7 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	struct NotificationModel::notification n = {
+			v,
 			app, 
 			iconPath,
 			img,
@@ -237,29 +254,20 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	// Write to log file
 	log(n);
 
-	beginInsertRows(QModelIndex(), 0, 0);
-	notificationsOrder.prepend(v);
+	beginInsertRows(QModelIndex(), notifications.size(), notifications.size());
+	notificationsOrder.append(v);
+	if ( critical ) {
+		criticalNotificationsOrder.append(v);
+	}
+
 	notifications.insert(v, n);
 	endInsertRows();
-
-	if ( critical ) {
-		m_lastCriticalNotification = v;
-	} else {
-		m_lastNotification = v;
-	}
+	emit notificationCountChanged(notifications.size());
 
 	if ( timeout != 0 ) {
 		new NotificationTimeout(this, v, timeout);
 	}
 
-	if ( critical ) {
-		emit latestCriticalChanged(n.app, n.summary, n.body, n.icon);
-	} else if ( !notificationsDisabled() ) {
-		emit latestNotificationChanged(n.app, n.summary, n.body, n.icon);
-	}
-
-	qDebug() << app << summary << body << icon << hints << timeout << v;
-	emit countChanged();
 	return v;
 }
 
@@ -274,14 +282,18 @@ void NotificationModel::log(struct NotificationModel::notification& n)
 		return;
 	}
 
-	*logFile << QString("\n<div class=\"notification\">\n<h3>%1 from %2</h3>\n<p>\n%3\n</p>\n</div>\n").arg(n.summary).arg(n.app).arg(n.body);
+	*logFile << QDateTime::currentDateTime().toString() << QString(" \"%1\" from *%2*: %3\n").arg(n.summary).arg(n.app).arg(n.body);
 	logFile->flush();
 	logDevice->flush();
 }
 
 int NotificationModel::rowCount(const QModelIndex& index) const
 {
-	return notifications.size();
+	if ( m_notificationsDisabled ) {
+		return criticalNotificationsOrder.size();
+	} else {	
+		return notificationsOrder.size();
+	}
 }
 
 QVariant NotificationModel::data(const QModelIndex& index, int role) const
@@ -289,11 +301,17 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
 	if (!index.isValid()) {
 		return QVariant();
 	}
-	if ( index.row() >= notifications.size() ) {
+
+	const QList<quint32>& notlist = m_notificationsDisabled ?
+						criticalNotificationsOrder:
+						notificationsOrder;
+
+	if ( index.row() >= notlist.size() ) {
 		return QVariant();
 	}
 
-	struct NotificationModel::notification n = notifications.value(notificationsOrder[index.row()]);
+	struct NotificationModel::notification n;
+	n = notifications.value(notlist[index.row()]);
 	switch(role) {
 	case ApplicationRole:
 		return n.app;
@@ -306,8 +324,11 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
 		return n.summary;
 	case BodyRole:
 		return n.body;
+	case UidRole:
+		return n.uid;
+	case CriticalRole:
+		return n.critical;
 	}
-
 	return QVariant();
 }
 
@@ -319,7 +340,13 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
  */
 void NotificationModel::setNotificationsDisabled(bool disabled)
 {
+	if ( disabled == m_notificationsDisabled ) {
+		return;
+	}
+
+	beginResetModel();
 	m_notificationsDisabled = disabled;
+	endResetModel();
 }
 
 bool NotificationModel::notificationsDisabled()

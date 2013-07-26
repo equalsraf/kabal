@@ -8,8 +8,5 @@
      <file>qml/kabal.qml</file>
      <file>qml/Notification.qml</file>
      <file>qml/Style.qml</file>
-     <file>qml/Button.qml</file>
-     <file>qml/StatusBar.qml</file>
-     <file>css/log.css</file>
  </qresource>
  </RCC>

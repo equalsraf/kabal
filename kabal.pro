@@ -7,10 +7,17 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
-QT += dbus declarative webkit
+QT += dbus declarative
 
 RESOURCES = data.qrc
 
 # Input
 HEADERS += notificationmodel.h iconprovider.h notificationtimeout.h kabal.h imageprovider.h
 SOURCES += main.cpp notificationmodel.cpp iconprovider.cpp notificationtimeout.cpp kabal.cpp imageprovider.cpp
+
+OTHER_FILES += \
+    qml/Notification.qml \
+    qml/kabal.qml
+
+# need this to debug QML
+# DEFINES += QMLJSDEBUGGER

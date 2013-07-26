@@ -5,14 +5,18 @@
 #include "iconprovider.h"
 #include "imageprovider.h"
 
-#include <QWebFrame>
 
-Kabal::Kabal(QObject *parent)
-:QObject(parent), logWidget(0)
+Kabal::Kabal(const QUrl& source, QObject *parent)
+:QObject(parent), m_qmlSource(QUrl("qrc:///qml/kabal.qml"))
 {
+	if ( source.isValid() ) {
+		m_qmlSource = source;
+	}
+
 	// System Tray
 	tray.setIcon(QIcon(":icons/kabal.png"));
 
+	// SysTray menu
 	QAction *disable = menu.addAction("Disable notifications");
 	disable->setCheckable(true);
 	connect(disable, SIGNAL(toggled(bool)),
@@ -32,18 +36,8 @@ Kabal::Kabal(QObject *parent)
 
 
 	model.setLogFilePath(
-		QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("kabal.html"));
+		QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("log"));
 
-	if ( !model.logFilePath().isEmpty() ) {
-		fsWatcher.addPath(model.logFilePath());
-
-		logWidget = new QWebView();
-		logWidget->settings()->setUserStyleSheetUrl(QUrl("qrc:///css/log.css"));
-		logWidget->settings()->setDefaultTextEncoding("utf-8");
-		logWidget->load(QUrl::fromLocalFile(model.logFilePath()));
-		connect(&fsWatcher, SIGNAL(fileChanged(QString)),
-			logWidget, SLOT(reload()));
-	}
 }
 
 QDeclarativeView* Kabal::createWidget()
@@ -52,6 +46,7 @@ QDeclarativeView* Kabal::createWidget()
 	QDeclarativeView *view = new QDeclarativeView;
 	view->engine()->addImageProvider(QLatin1String("icons"), new IconProvider());
 	view->engine()->addImageProvider(QLatin1String("images"), new ImageProvider(&model));
+
 	view->setWindowFlags(Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
 
 	// Export methods
@@ -59,7 +54,7 @@ QDeclarativeView* Kabal::createWidget()
 	view->rootContext()->setContextProperty("Window", view);
 
 	// Load root qml object
-	view->setSource(QUrl("qrc:///qml/kabal.qml"));
+	view->setSource(m_qmlSource);
 	view->move(10, 10);
 
 	return view;
@@ -98,11 +93,10 @@ void Kabal::setNotificationsDisabled(bool disabled)
 
 void Kabal::systrayActivated(QSystemTrayIcon::ActivationReason why)
 {
-	if ( why != QSystemTrayIcon::Trigger || !logWidget) {
-		return;
+	if ( why != QSystemTrayIcon::Trigger && model.rowCount()) {
+		foreach (QWidget *w, widgets) {
+			w->show();
+		}
 	}
-
-	logWidget->reload();
-	logWidget->setVisible(!logWidget->isVisible());
 }
 

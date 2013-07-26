@@ -39,10 +39,12 @@ private:
 class NotificationModel: public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY( int count READ rowCount NOTIFY countChanged )
 	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
+	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
+	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled)
 
 	struct notification {
+		quint32 uid;
 		QString app;
 		QString icon;
 		QImage image;
@@ -58,7 +60,9 @@ public:
 		IconRole,
 		SummaryRole,
 		BodyRole,
-		ImageRole
+		ImageRole,
+		UidRole,
+		CriticalRole
 	};
 
 	NotificationModel(QObject *parent=0);
@@ -74,7 +78,6 @@ public:
 
 	QString logFilePath() { return m_logFilePath; }
 	void setLogFilePath(const QString &path);
-
 	QImage getImage(qint32 id);
 
 public slots:
@@ -88,29 +91,23 @@ public slots:
 
 	quint32 Notify(const QString& app, const QString& summary, const QString& body, int timeout);
 
+
 signals:
 	// For DBus
-	void NotificationClosed(quint32 id, quint32 reason);
+	void notificationClosed(quint32 id, quint32 reason);
 	void ActionInvoked(uint id, const QString& reason);
-
-	// Simple signals to display the latest
-	// notifications
-	void latestNotificationChanged( const QString& application, const QString& summary, const QString& body, const QString& icon);
-	void closeNotification();
-	void latestCriticalChanged( const QString& application, const QString& summary, const QString& body, const QString& icon);
-	void closeCritical();
-	void countChanged();
+	void notificationCountChanged(int count);
 
 protected:
 	void log(struct NotificationModel::notification&);
 	QImage getImageFromHints(const QMap<QString, QVariant>& hints);
+	void incrementCounter();
 
 private:
-	quint32 version;
-	QMutex lock;
+	quint32 idcounter;
 	QList<quint32> notificationsOrder;
+	QList<quint32> criticalNotificationsOrder;
 	QHash<quint32, struct NotificationModel::notification> notifications;
-	quint32 m_lastNotification, m_lastCriticalNotification;
 	bool m_running, m_notificationsDisabled;
 	QTextStream* logFile;
 	QFile *logDevice;
