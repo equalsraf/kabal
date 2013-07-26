@@ -10,7 +10,7 @@ Hopefully its more sane than most other notification servers out there. My own
 frustrations with notification servers falls into one of two categories:
 
 1. They are too disruptive and annoy me (knotify, xfce)
-2. They are too lenient and loose some important 
+2. They are too lenient and lose some important 
    notifications (colibri, notify-osd)
 
 What does Kabal do differently?
