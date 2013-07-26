@@ -83,11 +83,11 @@ void Kabal::screenCountChanged(int count)
 void Kabal::setNotificationsDisabled(bool disabled)
 {
 	if ( disabled ) {
-		model.Notify("kabal", "Kabal", "Notifications are now disabled", 2);
+		model.Critical("kabal", "Kabal", "Notifications are now disabled", 2);
 		model.setNotificationsDisabled(disabled);
 	} else {
 		model.setNotificationsDisabled(disabled);
-		model.Notify("kabal", "Kabal", "Notifications are now enabled", 2);
+		model.Critical("kabal", "Kabal", "Notifications are now enabled", 2);
 	}
 }
 

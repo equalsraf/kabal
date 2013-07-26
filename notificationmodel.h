@@ -89,7 +89,7 @@ public slots:
 			int timeout);
 	void setNotificationsDisabled(bool);
 
-	quint32 Notify(const QString& app, const QString& summary, const QString& body, int timeout);
+	quint32 Critical(const QString& app, const QString& summary, const QString& body, int timeout);
 
 
 signals:

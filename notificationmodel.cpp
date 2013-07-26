@@ -83,7 +83,6 @@ uint NotificationModelAdaptor::Notify(const QString &app_name, uint replaces_id,
 		const QString &summary, const QString &body, const QStringList &actions,
 	       	const QVariantMap &hints, int expire_timeout)
 {
-
 	return widget->Notify(app_name, replaces_id, app_icon, summary, body, actions, hints, expire_timeout);
 }
 
@@ -146,9 +145,13 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 		return;
 	}
 
-	int idx = notificationsOrder.indexOf(id);
+	const QList<quint32>& notlist = m_notificationsDisabled ?
+						criticalNotificationsOrder:
+						notificationsOrder;
+	int idx = notlist.indexOf(id);
 	beginRemoveRows(QModelIndex(), idx, idx);
 	notificationsOrder.removeOne(id);
+
 	struct notification n = notifications.take(id);
 	if ( n.critical) {
 		criticalNotificationsOrder.removeOne(id);
@@ -156,7 +159,7 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 	endRemoveRows();
 
 	emit notificationClosed(id, reason);
-	emit notificationCountChanged(notifications.size());
+	emit notificationCountChanged(notlist.size());
 }
 
 
@@ -216,7 +219,6 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	bool critical =  (hints.value("urgency").toUInt() == 2);
-	qDebug() << __func__ << actions;
 
 	if ( replace ) {
 		CloseNotification(replace);
@@ -229,7 +231,7 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	// Add notification
-	int v = idcounter;
+	int uid = idcounter;
 	incrementCounter();
 
 	// Extract image-data
@@ -238,11 +240,11 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	if ( img.isNull() ) {
 		iconPath = "image://icons/" + appIcon;
 	} else {
-		iconPath = "image://images/" + QString::number(v);
+		iconPath = "image://images/" + QString::number(uid);
 	}
 
 	struct NotificationModel::notification n = {
-			v,
+			uid,
 			app, 
 			iconPath,
 			img,
@@ -254,26 +256,33 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	// Write to log file
 	log(n);
 
-	beginInsertRows(QModelIndex(), notifications.size(), notifications.size());
-	notificationsOrder.append(v);
+	const QList<quint32>& notlist = m_notificationsDisabled ?
+						criticalNotificationsOrder:
+						notificationsOrder;
+	beginInsertRows(QModelIndex(), notlist.size(), notlist.size());
+	notificationsOrder.append(uid);
 	if ( critical ) {
-		criticalNotificationsOrder.append(v);
+		criticalNotificationsOrder.append(uid);
 	}
-
-	notifications.insert(v, n);
+	notifications.insert(uid, n);
 	endInsertRows();
-	emit notificationCountChanged(notifications.size());
+
+	qDebug() << __func__ << n.summary << n.body << critical;
+
+	emit notificationCountChanged(notlist.size());
 
 	if ( timeout != 0 ) {
-		new NotificationTimeout(this, v, timeout);
+		new NotificationTimeout(this, uid, timeout);
 	}
 
-	return v;
+	return uid;
 }
 
-quint32 NotificationModel::Notify(const QString& app, const QString& summary, const QString& body, int timeout)
+quint32 NotificationModel::Critical(const QString& app, const QString& summary, const QString& body, int timeout)
 {
-	return Notify(app, 0, "", summary, body, QStringList(), QMap<QString, QVariant>() , timeout );
+	QMap<QString, QVariant> hints;
+	hints.insert("urgency", 2);
+	return Notify(app, 0, "", summary, body, QStringList(), hints , timeout );
 }
 
 void NotificationModel::log(struct NotificationModel::notification& n)
