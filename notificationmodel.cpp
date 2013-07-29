@@ -202,12 +202,12 @@ QImage NotificationModel::getImageFromHints(const QMap<QString, QVariant>& hints
 void NotificationModel::incrementCounter()
 {
 
-    if ( idcounter != INT_MAX ) {
+	if ( idcounter != INT_MAX ) {
 		idcounter++;
 		return;
 	}
 
-    if (notifications.size() == INT_MAX) {
+	if (notifications.size() == INT_MAX) {
 		// Remove some notifications NOW
 		quint32 oldest;
 		if ( notificationsOrder.size()) {
@@ -219,10 +219,9 @@ void NotificationModel::incrementCounter()
 	}
 	idcounter = 1;
 	while ( notifications.contains(idcounter++) );
-	
 }
 
-quint32 NotificationModel::Notify(const QString& app, uint replace, const QString& icon, 
+quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QString& icon, 
 		const QString& summary, const QString& body,
 		const QStringList& actionsArr, const QMap<QString, QVariant> &hints,
 		int timeout) {
@@ -242,7 +241,7 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 
 	// Add notification
-	int uid = idcounter;
+	quint32 uid = idcounter;
 	incrementCounter();
 
 	bool critical =  (hints.value("urgency").toUInt() == 2);
