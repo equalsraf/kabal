@@ -412,5 +412,6 @@ void NotificationModel::invokeAction(quint32 id, const QString& actionkey)
 
 	const struct NotificationModel::notification& n = notifications.value(id);
 	emit ActionInvoked(id, actionkey);
+	CloseNotification(id);
 }
 
