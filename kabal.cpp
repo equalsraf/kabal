@@ -35,10 +35,11 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 
 	screenCountChanged(desktop->screenCount());
 
-
 	model.setLogFilePath(
 		QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("log"));
 
+	connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
+			&model, SLOT(CloseAllNotifications()));
 }
 
 QDeclarativeView* Kabal::createWidget()

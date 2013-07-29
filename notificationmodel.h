@@ -83,6 +83,7 @@ public:
 public slots:
 	QStringList GetCapabilities();
 	void CloseNotification(quint32 id, quint32 reason=3);
+	void CloseAllNotifications();
 	quint32 Notify(const QString& app, uint replace, const QString& icon, 
 			const QString& summary, const QString& body,
 			const QStringList& actions, const QMap<QString, QVariant> &hints,

@@ -162,6 +162,15 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 	emit notificationCountChanged(notlist.size());
 }
 
+void NotificationModel::CloseAllNotifications()
+{
+	QHashIterator<quint32, struct notification> it(notifications);
+	while( it.hasNext() ) {
+		it.next();
+		CloseNotification(it.key());
+	}
+}
+
 
 QImage NotificationModel::getImageFromHints(const QMap<QString, QVariant>& hints)
 {
