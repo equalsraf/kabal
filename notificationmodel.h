@@ -52,6 +52,8 @@ class NotificationModel: public QAbstractListModel
 		QString body;
 		int timeout;
 		bool critical;
+		//QMap<QString, QString> actions;
+		QVariantList actionKeys, actionNames;
 	};
 
 public:
@@ -62,7 +64,9 @@ public:
 		BodyRole,
 		ImageRole,
 		UidRole,
-		CriticalRole
+		CriticalRole,
+		ActionKeysRole,
+		ActionNamesRole,
 	};
 
 	NotificationModel(QObject *parent=0);
@@ -91,12 +95,13 @@ public slots:
 	void setNotificationsDisabled(bool);
 
 	quint32 Critical(const QString& app, const QString& summary, const QString& body, int timeout);
+	void invokeAction(quint32 uid, const QString& action);
 
 
 signals:
 	// For DBus
 	void notificationClosed(quint32 id, quint32 reason);
-	void ActionInvoked(uint id, const QString& reason);
+	void ActionInvoked(quint32 id, const QString& reason);
 	void notificationCountChanged(int count);
 
 protected:

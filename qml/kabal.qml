@@ -1,12 +1,12 @@
 import QtQuick 1.1
 
 Rectangle {
-	property int notificationHeight: 64
+	property int notificationHeight: 84
 
 	id: root
 	Style { id: style}
 	width: 380
-	height: 64
+	height: notificationHeight
 
 	border.color: style.borderColor
 	border.width: 2
@@ -39,12 +39,12 @@ Rectangle {
 		anchors.top: parent.top
 		anchors.left: parent.left
 		anchors.right: parent.right
-		height: 64
+		height: notificationHeight
 
 		orientation: ListView.Horizontal
 		model: notificationModel
 		snapMode: ListView.SnapToItem
-	        delegate: Notification { height: 64; width: root.width}
+	        delegate: Notification { height: notificationHeight; width: root.width}
 	}
 
 }

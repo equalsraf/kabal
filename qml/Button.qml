@@ -1,36 +1,31 @@
 import QtQuick 1.1
 
 Rectangle {
-	property string text : ""
-
 	id: button
-	Style {id: style}
+	property alias label: text.text
+	signal clicked
+	width: text.width
+	height: text.height
+	Style { id: style}
+	color: style.backgroundColor2
+	radius: 3
 
-	color: 'transparent'
+	Text {
+		id: text
+		color: style.textColor
+	}
 
-	Rectangle {
+	MouseArea {
+		id: mousearea
+		hoverEnabled: true
 		anchors.fill: parent
-		anchors.margins: 4
-		color: style.backgroundColor2
-		radius: 20
-		smooth: true
-		Text {
-			anchors.fill: parent
-			text: button.text
-			color: style.textColor
-			font.bold: true
-			font.pointSize: 8
-			horizontalAlignment: Text.AlignHCenter
-			verticalAlignment: Text.AlignVCenter
+		onEntered: {
+			button.color = style.highlight
 		}
-
-		MouseArea {
-			hoverEnabled: true
-			anchors.fill: parent
-			onEntered: parent.color = style.highlight
-			onExited: parent.color = style.backgroundColor2
+		onExited: {
+			button.color = style.backgroundColor2
 		}
-
+		onClicked: button.clicked()
 	}
 }
 

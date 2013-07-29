@@ -23,7 +23,7 @@ Rectangle {
 		anchors.topMargin: 5
 		anchors.top: parent.top
 		anchors.left: parent.left
-		anchors.bottom: parent.bottom
+		anchors.bottom: actionbox.top
 	}
 
 	Text {
@@ -51,7 +51,7 @@ Rectangle {
 		maximumLineCount: 2
 		anchors.left: iconImage.right
 		anchors.right: parent.right
-		anchors.bottom: parent.bottom
+		anchors.bottom: actionbox.top
 		anchors.top: summaryText.bottom
 	}
 
@@ -59,8 +59,30 @@ Rectangle {
 		anchors.fill: parent
 		onClicked: {
 			notificationModel.CloseNotification(uid)
-			}
+		}
 	}
+
+	Row {
+		id: actionbox
+		height: 16
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.bottom: parent.bottom
+		anchors.margins: 2
+		spacing: 4
+
+		Repeater {
+
+		model: actionkeys
+		Button { 
+			label: actionnames[index]
+			height: parent.height
+			onClicked: notificationModel.invokeAction(uid, actionkeys[index])
+		}
+		}
+	}
+
+
 	} // Container
 
 }

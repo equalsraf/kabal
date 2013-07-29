@@ -52,6 +52,8 @@ NotificationModelAdaptor::NotificationModelAdaptor(NotificationModel* w)
 {
 	connect(w, SIGNAL(notificationClosed(quint32, quint32)),
 		this, SIGNAL(NotificationClosed(quint32, quint32)));
+	connect(w, SIGNAL(ActionInvoked(quint32, const QString&)),
+		this, SIGNAL(ActionInvoked(quint32, const QString&)));
 }
 
 QStringList NotificationModelAdaptor::GetCapabilities() {
@@ -80,10 +82,10 @@ void NotificationModelAdaptor::CloseNotification(quint32 id)
 
 
 uint NotificationModelAdaptor::Notify(const QString &app_name, uint replaces_id, const QString &app_icon, 
-		const QString &summary, const QString &body, const QStringList &actions,
+		const QString &summary, const QString &body, const QStringList &actionsArr,
 	       	const QVariantMap &hints, int expire_timeout)
 {
-	return widget->Notify(app_name, replaces_id, app_icon, summary, body, actions, hints, expire_timeout);
+	return widget->Notify(app_name, replaces_id, app_icon, summary, body, actionsArr, hints, expire_timeout);
 }
 
 
@@ -104,6 +106,8 @@ NotificationModel::NotificationModel(QObject *parent)
 	roles[BodyRole] = "body";
 	roles[UidRole] = "uid";
 	roles[CriticalRole] = "critical";
+	roles[ActionKeysRole] = "actionkeys";
+	roles[ActionNamesRole] = "actionnames";
 	setRoleNames(roles);
 
 	new NotificationModelAdaptor(this);
@@ -136,7 +140,7 @@ void NotificationModel::setLogFilePath(const QString& path)
 
 QStringList NotificationModel::GetCapabilities() 
 {
-	return QStringList() << "body";
+	return QStringList() << "body" << "actions";
 }
 
 void NotificationModel::CloseNotification(quint32 id, quint32 reason)
@@ -220,14 +224,12 @@ void NotificationModel::incrementCounter()
 
 quint32 NotificationModel::Notify(const QString& app, uint replace, const QString& icon, 
 		const QString& summary, const QString& body,
-		const QStringList& actions, const QMap<QString, QVariant> &hints,
+		const QStringList& actionsArr, const QMap<QString, QVariant> &hints,
 		int timeout) {
 
 	if ( timeout == -1 || (timeout > 0 && timeout < 1000) ) {
 		timeout = 7000;
 	}
-
-	bool critical =  (hints.value("urgency").toUInt() == 2);
 
 	if ( replace ) {
 		CloseNotification(replace);
@@ -243,6 +245,8 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	int uid = idcounter;
 	incrementCounter();
 
+	bool critical =  (hints.value("urgency").toUInt() == 2);
+
 	// Extract image-data
 	QString iconPath;
 	QImage img = getImageFromHints(hints);
@@ -250,6 +254,13 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 		iconPath = "image://icons/" + appIcon;
 	} else {
 		iconPath = "image://images/" + QString::number(uid);
+	}
+
+	// actions
+	QVariantList actionKeys, actionNames;
+	for ( int i=0; i+1<actionsArr.size(); i+=2) {
+		actionKeys.append(actionsArr.at(i));
+		actionNames.append(actionsArr.at(i+1));
 	}
 
 	struct NotificationModel::notification n = {
@@ -260,7 +271,9 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 			htmlToPlainText(summary),
 			htmlToPlainText(body),
 			timeout,
-			critical
+			critical,
+			actionKeys,
+			actionNames,
 		};
 	// Write to log file
 	log(n);
@@ -275,8 +288,6 @@ quint32 NotificationModel::Notify(const QString& app, uint replace, const QStrin
 	}
 	notifications.insert(uid, n);
 	endInsertRows();
-
-	qDebug() << __func__ << n.summary << n.body << critical;
 
 	emit notificationCountChanged(notlist.size());
 
@@ -328,8 +339,7 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	struct NotificationModel::notification n;
-	n = notifications.value(notlist[index.row()]);
+	const struct NotificationModel::notification& n = notifications.value(notlist[index.row()]);
 	switch(role) {
 	case ApplicationRole:
 		return n.app;
@@ -346,6 +356,10 @@ QVariant NotificationModel::data(const QModelIndex& index, int role) const
 		return n.uid;
 	case CriticalRole:
 		return n.critical;
+	case ActionKeysRole:
+		return n.actionKeys;
+	case ActionNamesRole:
+		return n.actionNames;
 	}
 	return QVariant();
 }
@@ -388,5 +402,15 @@ QString NotificationModel::htmlToPlainText(const QString& html)
 QImage NotificationModel::getImage(qint32 id)
 {
 	return notifications.value(id).image;
+}
+
+void NotificationModel::invokeAction(quint32 id, const QString& actionkey)
+{
+	if ( !notifications.contains(id) ) {
+		return;
+	}
+
+	const struct NotificationModel::notification& n = notifications.value(id);
+	emit ActionInvoked(id, actionkey);
 }
 
