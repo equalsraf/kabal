@@ -1,10 +1,11 @@
 
 # About
 
-Kabal is a notification server, like notify-osd, knotify and colibri.
+Kabal is a notification server, like notify-osd, knotify and colibri. It is written
+using Qt and QML, it should work with any desktop environment.
 
 
-# What makes it different from XYZ?
+# What makes Kabal different from XYZ?
 
 Hopefully its more sane by default than most other notification servers out there. My own
 frustrations with notification servers falls into one of two categories:
@@ -24,6 +25,10 @@ What does Kabal do differently?
 
 # How do I use it?
 
+Run kabal, e.g.
+
+    ./kabal
+
 Whenever Kabal starts it will place an icon in system tray. From that icon
 you can:
 
@@ -34,8 +39,7 @@ On the notification widget:
 
 1. Single click a notification to close it
 
-
-## Kog file
+## Log file
 
 Kabal keeps a log file of past notifications in $HOME/.kabal/log.
 
