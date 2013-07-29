@@ -73,14 +73,45 @@ void Kabal::screenCountChanged(int count)
 		}
 	}
 	
+	// settings
 	int x, y;
 	x = settings.value("x", 10).toInt();
 	y = settings.value("y", 10).toInt();
+	QString corner = settings.value("corner", "").toString().toLower();
+	int corner_opt;
+
+	if ( corner == "topleft" ) {
+		corner_opt = Qt::TopLeftCorner;
+	} else if ( corner == "topright" ) {
+		corner_opt = Qt::TopRightCorner;
+	} else if ( corner == "bottomleft" ) {
+		corner_opt = Qt::BottomLeftCorner;
+	} else if ( corner == "bottomright" ) {
+		corner_opt = Qt::BottomRightCorner;
+	} else {
+		qDebug() << "Unknown value for corner, assuming top left";
+		corner_opt = Qt::TopLeftCorner;
+	}
 
 	// Reposition remaining widgets
 	for (int i=0; i<count; i++) {
 		QRect screen = QApplication::desktop()->screenGeometry(i);
-		widgets.at(i)->move(screen.left() + x, screen.top() + y);
+
+		QWidget *W = widgets.at(i);
+		switch( corner_opt ) {
+		case Qt::TopRightCorner:
+			W->move(screen.right() - W->width() - x, screen.top() + y);
+			break;
+		case Qt::BottomLeftCorner:
+			W->move(screen.left() + x, screen.bottom()- W->height() - y);
+			break;
+		case Qt::BottomRightCorner:
+			W->move(screen.right() - W->width() - x, screen.bottom()- W->height() - y);
+			break;
+		default:
+			// default is top left corner
+			W->move(screen.left() + x, screen.top() + y);
+		}
 	}
 }
 
