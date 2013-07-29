@@ -58,7 +58,12 @@ Rectangle {
 	MouseArea {
 		anchors.fill: parent
 		onClicked: {
-			notificationModel.CloseNotification(uid)
+			var dflidx = actionkeys.indexOf('default')
+			if (dflidx == -1 ) {
+				notificationModel.CloseNotification(uid)
+			} else {
+				notificationModel.invokeAction(uid, actionkeys[dflidx])
+			}
 		}
 	}
 

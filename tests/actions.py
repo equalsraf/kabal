@@ -17,6 +17,7 @@ test=pynotify.Notification ("Testing actions","This is an example notification."
 test.set_timeout(60000)
 test.add_action('actionkey', 'Click here', onclicked)
 test.add_action('actionkey2', 'Click now', onclicked)
+test.add_action('default', 'Ignore', onclicked)
 
 test.show ()
 loop.run()

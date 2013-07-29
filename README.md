@@ -37,7 +37,8 @@ you can:
 
 On the notification widget:
 
-1. Single click a notification to close it
+1. Single click a notification to close it, or invoke the default action
+   for the notification
 
 ## Log file
 
