@@ -96,7 +96,8 @@ NotificationModel::NotificationModel(QObject *parent)
 :QAbstractListModel(parent), idcounter(1),
 	m_running(true),
 	m_notificationsDisabled(false),
-	logFile(0), logDevice(0)
+	logFile(0), logDevice(0),
+	m_minimalTimeout(7000)
 {
 	qDBusRegisterMetaType<ImageData>();
 	QHash<int, QByteArray> roles;
@@ -226,8 +227,8 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 		const QStringList& actionsArr, const QMap<QString, QVariant> &hints,
 		int timeout) {
 
-	if ( timeout == -1 || (timeout > 0 && timeout < 1000) ) {
-		timeout = 7000;
+	if ( timeout < m_minimalTimeout )  {
+		timeout = m_minimalTimeout;
 	}
 
 	if ( replace ) {
@@ -413,5 +414,12 @@ void NotificationModel::invokeAction(quint32 id, const QString& actionkey)
 	const struct NotificationModel::notification& n = notifications.value(id);
 	emit ActionInvoked(id, actionkey);
 	CloseNotification(id);
+}
+
+void NotificationModel::setMinimalTimeout(int t)
+{
+	if (t >= 0) {
+		m_minimalTimeout = t;
+	}
 }
 

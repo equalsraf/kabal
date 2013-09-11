@@ -42,6 +42,7 @@ class NotificationModel: public QAbstractListModel
 	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
 	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
 	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled NOTIFY notificationsToggled)
+	Q_PROPERTY( int minimalTimeout READ minimalTimeout WRITE setMinimalTimeout )
 
 	struct notification {
 		quint32 uid;
@@ -84,6 +85,9 @@ public:
 	void setLogFilePath(const QString &path);
 	QImage getImage(qint32 id);
 
+	void setMinimalTimeout(int t);
+	int minimalTimeout() {return m_minimalTimeout;}
+
 public slots:
 	QStringList GetCapabilities();
 	void CloseNotification(quint32 id, quint32 reason=3);
@@ -119,6 +123,7 @@ private:
 	QTextStream* logFile;
 	QFile *logDevice;
 	QString m_logFilePath;
+	int m_minimalTimeout;
 };
 
 

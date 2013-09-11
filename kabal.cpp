@@ -114,6 +114,8 @@ void Kabal::screenCountChanged(int count)
 			W->move(screen.left() + x, screen.top() + y);
 		}
 	}
+	
+	model.setMinimalTimeout( settings.value("mintime", 7000).toInt() );
 }
 
 void Kabal::setNotificationsDisabled(bool disabled)
