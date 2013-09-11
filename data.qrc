@@ -4,6 +4,7 @@
  <qresource>
      <file>icons/dialog-information.png</file>
      <file>icons/kabal.png</file>
+     <file>icons/arrow_r.png</file>
      <file>qml/kabal.qml</file>
      <file>qml/Notification.qml</file>
      <file>qml/Style.qml</file>

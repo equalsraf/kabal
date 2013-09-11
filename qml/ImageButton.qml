@@ -2,17 +2,14 @@ import QtQuick 1.1
 
 Rectangle {
 	id: button
-	property alias label: text.text
+	property alias source: img.source
+	property alias mirror: img.mirror
 	signal clicked
-	height: text.height
-	width: text.width
 
-	Style { id: style}
-	color: style.backgroundColor2
-
-	Text {
-		id: text
-		color: style.textColor
+	Image {
+		id: img
+		anchors.fill: parent;
+		fillMode: Image.PreserveAspectFit
 	}
 
 	MouseArea {
