@@ -41,7 +41,7 @@ class NotificationModel: public QAbstractListModel
 	Q_OBJECT
 	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
 	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
-	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled)
+	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled NOTIFY notificationsToggled)
 
 	struct notification {
 		quint32 uid;
@@ -103,6 +103,7 @@ signals:
 	void notificationClosed(quint32 id, quint32 reason);
 	void ActionInvoked(quint32 id, const QString& reason);
 	void notificationCountChanged(int count);
+	void notificationsToggled(bool);
 
 protected:
 	void log(struct NotificationModel::notification&);

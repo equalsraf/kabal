@@ -378,6 +378,7 @@ void NotificationModel::setNotificationsDisabled(bool disabled)
 	beginResetModel();
 	m_notificationsDisabled = disabled;
 	endResetModel();
+	emit notificationsToggled(disabled);
 }
 
 bool NotificationModel::notificationsDisabled()

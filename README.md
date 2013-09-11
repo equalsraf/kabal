@@ -2,26 +2,28 @@
 # About
 
 Kabal is a notification server, like notify-osd, knotify and colibri. It is written
-using Qt and QML, it should work with any desktop environment.
+using Qt and QML. It should work with any desktop environment.
 
 
 # What makes Kabal different from XYZ?
 
 Hopefully its more sane by default than most other notification servers out there. My own
-frustrations with notification servers falls into one of two categories:
+frustrations with notification servers fall into one of the following:
 
 1. They are too disruptive and annoy me (knotify, xfce)
 2. They are too lenient and lose some important 
    notifications (colibri, notify-osd)
+3. They are too light in features - applications 
+   assume the notification server has some features
+   (html, actions, etc) and won't work properly without those
 
 What does Kabal do differently?
 
 1. It only shows the LATEST notification and no more
-2. Notifications can be disabled!
-3. Critical notifications are alway shown regardless
-   of (2) i.e. battery warnings and so on
-4. It stores a logfile of notifications during the
-   past session
+2. Non critical notifications can be disabled!
+3. It stores a logfile of notifications
+4. It has multi screen support, i.e. one notification
+   will be displayed in each screen
 
 # How do I use it?
 
@@ -40,11 +42,13 @@ On the notification widget:
 1. Single click a notification to close it, or invoke the default action
    for the notification
 
-## Log file
+# Other stuff
 
-Kabal keeps a log file of past notifications in $HOME/.kabal/log.
+- Kabal keeps a log file of past notifications in $HOME/.kabal/log.
+- There is also a config file in $HOME/.kabal/config - but there aren't
+  many options yet, other than the widget position
 
 # TODO 
 
-* Configurable Widget position
-
+* Configurable Widget position [Works, but we need a GUI for this]
+* Settings in the notification widget
