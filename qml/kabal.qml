@@ -12,29 +12,17 @@ Rectangle {
 	border.width: 2
 	color: style.backgroundColor2
 
-	function updateWidget() {
-		var count = notificationModel.notificationCount;
-
-		if ( count === 0 ) {
-			// Nothing to show
-			Window.hide();
-		} else if (Window.visible === false) {
-			Window.show();
-		} else if (mouse.containsMouse === false) {
-			view.currentIndex = view.count-1;
-		}
-	}
-
 	Connections {
 		target: notificationModel
-		onRowsRemoved: {
-			updateWidget();
-		}
-		onRowsInserted: {
-			updateWidget();
-		}
-		onNotificationsToggled: {
-			updateWidget();
+		onNotificationCountChanged: {
+			if ( count === 0 ) {
+				// Nothing to show
+				Window.hide();
+			} else if (Window.visible === false) {
+				Window.show();
+			} else if (mouse.containsMouse === false) {
+				view.currentIndex = view.count-1;
+			}
 		}
 	}
 
@@ -70,11 +58,9 @@ Rectangle {
 		color: style.backgroundColor2
 
 		ImageButton {
-			source: 'qrc:///icons/arrow_r.png'
-
+			source: 'qrc:///icons/go-previous-view.png'
 			id:buttonPrev
-			mirror: true
-			width: 8
+			width: 16
 			anchors.top: parent.top
 			anchors.left: parent.left
 			anchors.bottom: parent.bottom
@@ -108,13 +94,26 @@ Rectangle {
 		}
 		ImageButton {
 			id:buttonNext
-			source: 'qrc:///icons/arrow_r.png'
+			source: 'qrc:///icons/go-next-view.png'
 			anchors.leftMargin: 5
 			anchors.top: parent.top
 			anchors.left: statusCountTotal.right
 			anchors.bottom: parent.bottom
-			width: 8
+			width: 16
 			onClicked: view.incrementCurrentIndex()
+		}
+		
+		ImageButton { // disable notification
+			id: buttonToggleNotifications
+			checkable: true
+			source: "qrc:///icons/user-online.png"
+			sourceChecked: "qrc:///icons/user-busy.png"
+			anchors.top: parent.top
+			anchors.left: buttonNext.right
+			anchors.bottom: parent.bottom
+			onClicked: { 
+				notificationModel.notificationsDisabled = !notificationModel.notificationsDisabled
+			}
 		}
 	}
 
