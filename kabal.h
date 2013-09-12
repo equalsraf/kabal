@@ -17,7 +17,7 @@ protected:
 	QDeclarativeView* createWidget();
 
 public slots:
-	void setNotificationsDisabled(bool);
+	void notificationsDisabled(bool);
 
 protected slots:
 	void screenCountChanged(int);

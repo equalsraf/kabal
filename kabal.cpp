@@ -21,7 +21,12 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 	QAction *disable = menu.addAction("Disable notifications");
 	disable->setCheckable(true);
 	connect(disable, SIGNAL(toggled(bool)),
-		this, SLOT(setNotificationsDisabled(bool)));
+		&model, SLOT(setNotificationsDisabled(bool)));
+
+	connect(&model, SIGNAL(notificationsToggled(bool)),
+			this, SLOT(notificationsDisabled(bool)));
+	connect(&model, SIGNAL(notificationsToggled(bool)),
+			disable, SLOT(setChecked(bool)));
 
 	connect(&tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			this, SLOT(systrayActivated(QSystemTrayIcon::ActivationReason)));
@@ -118,13 +123,11 @@ void Kabal::screenCountChanged(int count)
 	model.setMinimalTimeout( settings.value("mintime", 7000).toInt() );
 }
 
-void Kabal::setNotificationsDisabled(bool disabled)
+void Kabal::notificationsDisabled(bool disabled)
 {
 	if ( disabled ) {
 		model.Critical("kabal", "Kabal", "Notifications are now disabled", 2);
-		model.setNotificationsDisabled(disabled);
 	} else {
-		model.setNotificationsDisabled(disabled);
 		model.Critical("kabal", "Kabal", "Notifications are now enabled", 2);
 	}
 }
