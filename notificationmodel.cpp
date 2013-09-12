@@ -154,6 +154,9 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 						criticalNotificationsOrder:
 						notificationsOrder;
 	int idx = notlist.indexOf(id);
+    if ( idx == -1) {
+        return;
+    }
 	beginRemoveRows(QModelIndex(), idx, idx);
 	notificationsOrder.removeOne(id);
 
