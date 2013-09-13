@@ -63,22 +63,12 @@ Rectangle {
 
 		color: style.backgroundColor2
 
-		ImageButton {
-			source: 'qrc:///icons/go-previous-view.png'
-			id:buttonPrev
-			width: 16
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.bottom: parent.bottom
-			onClicked: view.decrementCurrentIndex()
-		}
-
 		Text {
 			id: statusCount
 			color: style.textColor
 			text: view.currentIndex + 1
 			anchors.top: parent.top
-			anchors.left: buttonPrev.right
+			anchors.left: parent.left
 			anchors.bottom: parent.bottom
 			anchors.leftMargin: 5
 		}
@@ -98,16 +88,6 @@ Rectangle {
 			anchors.bottom: parent.bottom
 			text: view.count
 		}
-		ImageButton {
-			id:buttonNext
-			source: 'qrc:///icons/go-next-view.png'
-			anchors.leftMargin: 5
-			anchors.top: parent.top
-			anchors.left: statusCountTotal.right
-			anchors.bottom: parent.bottom
-			width: 16
-			onClicked: view.incrementCurrentIndex()
-		}
 		
 		ImageButton { // disable notification
 			id: buttonToggleNotifications
@@ -115,7 +95,7 @@ Rectangle {
 			source: "qrc:///icons/user-online.png"
 			sourceChecked: "qrc:///icons/user-busy.png"
 			anchors.top: parent.top
-			anchors.left: buttonNext.right
+			anchors.left: statusCountTotal.right
 			anchors.bottom: parent.bottom
 			onClicked: { 
 				notificationModel.notificationsDisabled = !notificationModel.notificationsDisabled
