@@ -17,13 +17,13 @@ Rectangle {
 	Image {
 		id: iconImage
         	source: icon
-		width: parent.height
+		width: 48
+		height: 48
 		fillMode: Image.PreserveAspectFit
 
-		anchors.topMargin: 5
+		anchors.leftMargin: 4
 		anchors.top: parent.top
 		anchors.left: parent.left
-		anchors.bottom: actionbox.top
 	}
 
 	Text {
@@ -38,6 +38,7 @@ Rectangle {
 		anchors.right: parent.right
 		anchors.top: parent.top
 		anchors.topMargin: 4
+		anchors.leftMargin: 8
 		anchors.bottomMargin: 4
 	}
 	Text {
@@ -47,8 +48,8 @@ Rectangle {
 		color: style.textColor
 		elide: Text.ElideRight
 		wrapMode: Text.Wrap
-		verticalAlignment: Text.AlignVCenter
 		maximumLineCount: 2
+		anchors.leftMargin: 8
 		anchors.left: iconImage.right
 		anchors.right: parent.right
 		anchors.bottom: actionbox.top
