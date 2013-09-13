@@ -4,7 +4,10 @@
  <qresource>
      <file>icons/dialog-information.png</file>
      <file>icons/kabal.png</file>
-     <file>icons/arrow_r.png</file>
+     <file>icons/kabal_s.png</file>
+     <file>icons/go-previous-view.png</file>
+     <file>icons/go-next-view.png</file>
+     <file>icons/user-online.png</file>
      <file>qml/kabal.qml</file>
      <file>qml/Notification.qml</file>
      <file>qml/Style.qml</file>
