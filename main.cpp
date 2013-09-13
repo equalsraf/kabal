@@ -4,9 +4,12 @@
 int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
-	// FIXME: this is DEBUG!!!
+#ifdef KABAL_DEBUG
 	Kabal *kabal = new Kabal(QUrl( QDir(QDir().filePath("qml")).filePath("kabal.qml") ));
-	//Kabal *kabal = new Kabal();
+	qDebug() << "Loading qml interface from local path qml/";
+#else
+	Kabal *kabal = new Kabal();
+#endif
 	if ( !kabal->isRunning() ) {
 		return -1;
 	}

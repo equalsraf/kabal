@@ -8,8 +8,11 @@
      <file>icons/go-previous-view.png</file>
      <file>icons/go-next-view.png</file>
      <file>icons/user-online.png</file>
+
      <file>qml/kabal.qml</file>
      <file>qml/Notification.qml</file>
      <file>qml/Style.qml</file>
+     <file>qml/Button.qml</file>
+     <file>qml/ImageButton.qml</file>
  </qresource>
  </RCC>

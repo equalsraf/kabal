@@ -21,3 +21,4 @@ OTHER_FILES += \
 
 # need this to debug QML
 # DEFINES += QMLJSDEBUGGER
+# DEFINES += KABAL_DEBUG
