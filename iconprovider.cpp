@@ -8,13 +8,15 @@ IconProvider::IconProvider()
 QPixmap IconProvider::requestPixmap(const QString& id, QSize *size, const QSize &requestedSize)
 {
 	QIcon icon;
-	QUrl url = QUrl::fromLocalFile(id);
-	if ( QIcon::hasThemeIcon(id) ) {
+	QFileInfo fi(id);
+	if ( fi.isAbsolute() && fi.exists() ) {
+		icon = QIcon(fi.absoluteFilePath());
+	} else if ( QIcon::hasThemeIcon(id) ) {
 		icon = QIcon::fromTheme(id);
 	} else {
 		// This only works on *nix/X11
 		QString path = QDir("/usr/share/pixmaps/").absoluteFilePath(id + ".");
-		foreach (QString ext, QStringList() << "png" << "jpg" << "xpm"  ) {
+		foreach (QString ext, QStringList() << "png" << "jpg" << "xpm" << "ico"  ) {
 			if ( QFile::exists(path + ext) ) {
 				icon = QIcon(path + ext);
 				break;
