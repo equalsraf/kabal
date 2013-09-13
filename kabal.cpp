@@ -38,6 +38,8 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 	QDesktopWidget *desktop = QApplication::desktop();
 	connect(desktop, SIGNAL(screenCountChanged(int)),
 		this, SLOT(screenCountChanged(int)));
+	connect(desktop, SIGNAL(resized(int)),
+		this, SLOT(repositionWidget(int)));
 
 	screenCountChanged(desktop->screenCount());
 
@@ -69,19 +71,22 @@ QDeclarativeView* Kabal::createWidget()
 	return view;
 }
 
-void Kabal::screenCountChanged(int count)
+/**
+ * Reposition widget at given screen, to its correct
+ * coordinates
+ */
+void Kabal::repositionWidget(int i)
 {
-	// Remove unneed widgets
-	if ( count < widgets.size() ) {
-		for (int i=count; i< widgets.size(); i++) {
-			widgets.takeAt(i)->deleteLater();
-		}
-	} else if ( count > widgets.size() ) {
-		for (int i=widgets.size(); i<count ; i++) {
-			widgets.append(createWidget());
-		}
+	if ( i >= widgets.size() && i < 0) {
+		return;
 	}
-	
+
+	QWidget *W = widgets.at(i);
+	if ( W == NULL ) {
+		return;
+	}
+	QRect screen = QApplication::desktop()->screenGeometry(i);
+
 	// settings
 	int x, y;
 	x = settings.value("x", 10).toInt();
@@ -102,25 +107,43 @@ void Kabal::screenCountChanged(int count)
 		corner_opt = Qt::TopLeftCorner;
 	}
 
+	switch( corner_opt ) {
+	case Qt::TopRightCorner:
+		W->move(screen.right() - W->width() - x, screen.top() + y);
+		break;
+	case Qt::BottomLeftCorner:
+		W->move(screen.left() + x, screen.bottom()- W->height() - y);
+		break;
+	case Qt::BottomRightCorner:
+		W->move(screen.right() - W->width() - x, screen.bottom()- W->height() - y);
+		break;
+	default:
+		// default is top left corner
+		W->move(screen.left() + x, screen.top() + y);
+	}
+
+}
+
+/**
+ * Called when the screen count changes to create/remove
+ * the declarative view widgets
+ */
+void Kabal::screenCountChanged(int count)
+{
+	// Remove unneed widgets
+	if ( count < widgets.size() ) {
+		for (int i=count; i< widgets.size(); i++) {
+			widgets.takeAt(i)->deleteLater();
+		}
+	} else if ( count > widgets.size() ) {
+		for (int i=widgets.size(); i<count ; i++) {
+			widgets.append(createWidget());
+		}
+	}
+	
 	// Reposition remaining widgets
 	for (int i=0; i<count; i++) {
-		QRect screen = QApplication::desktop()->screenGeometry(i);
-
-		QWidget *W = widgets.at(i);
-		switch( corner_opt ) {
-		case Qt::TopRightCorner:
-			W->move(screen.right() - W->width() - x, screen.top() + y);
-			break;
-		case Qt::BottomLeftCorner:
-			W->move(screen.left() + x, screen.bottom()- W->height() - y);
-			break;
-		case Qt::BottomRightCorner:
-			W->move(screen.right() - W->width() - x, screen.bottom()- W->height() - y);
-			break;
-		default:
-			// default is top left corner
-			W->move(screen.left() + x, screen.top() + y);
-		}
+		repositionWidget(i);
 	}
 	
 	model.setMinimalTimeout( settings.value("mintime", 7000).toInt() );

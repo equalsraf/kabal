@@ -21,6 +21,7 @@ public slots:
 
 protected slots:
 	void screenCountChanged(int);
+	void repositionWidget(int);
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
 
 private:
