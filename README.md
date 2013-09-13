@@ -41,6 +41,10 @@ On the notification widget:
 
 1. Single click a notification to close it, or invoke the default action
    for the notification
+2. There should be action buttons inside each notification
+3. A status bar with is available under the notifications, with
+   buttons to switch and disable notifications
+4. The mouse wheel can be used to scroll through notifications
 
 # Other stuff
 
