@@ -46,13 +46,22 @@ On the notification widget:
    buttons to switch and disable notifications
 4. The mouse wheel can be used to scroll through notifications
 
-# Other stuff
-
-- Kabal keeps a log file of past notifications in $HOME/.kabal/log.
-- There is also a config file in $HOME/.kabal/config - but there aren't
-  many options yet, other than the widget position
-
 # TODO 
 
 * Configurable Widget position [Works, but we need a GUI for this]
 * Settings in the notification widget
+
+# Configuration options
+
+Kabal will read settings from $HOME/.kabal/config - but there aren't
+many options yet, other than the widget position. Here are some configuration 
+the default settings
+
+    log = /home/user/.kabal/log
+    trunclog = true
+    x = 10
+    y = 10
+    corner = topleft
+    mintime = 7000
+
+
