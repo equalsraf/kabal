@@ -8,14 +8,15 @@
 
 Kabal::Kabal(const QUrl& source, QObject *parent)
 :QObject(parent), m_qmlSource(QUrl("qrc:///qml/kabal.qml")),
-	settings(QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("config"), QSettings::IniFormat)
+	settings(QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("config"), QSettings::IniFormat),
+	trayIcon(":icons/kabal.png"), trayIconDisabled(":icons/kabal_s.png")
 {
 	if ( source.isValid() ) {
 		m_qmlSource = source;
 	}
 
 	// System Tray
-	tray.setIcon(QIcon(":icons/kabal.png"));
+	tray.setIcon(trayIcon);
 
 	// SysTray menu
 	QAction *disable = menu.addAction("Disable notifications");
@@ -126,9 +127,11 @@ void Kabal::screenCountChanged(int count)
 void Kabal::notificationsDisabled(bool disabled)
 {
 	if ( disabled ) {
-		model.Critical("kabal", "Kabal", "Notifications are now disabled", 2);
+		model.Critical("kabal_s", "Kabal", "Notifications are now disabled", 2);
+		tray.setIcon(trayIconDisabled);
 	} else {
 		model.Critical("kabal", "Kabal", "Notifications are now enabled", 2);
+		tray.setIcon(trayIcon);
 	}
 }
 

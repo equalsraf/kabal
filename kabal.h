@@ -31,6 +31,7 @@ private:
 	QList <QDeclarativeView*> widgets;
 	QFileSystemWatcher fsWatcher;
 	QSettings settings;
+	QIcon trayIcon, trayIconDisabled;
 };
 
 #endif
