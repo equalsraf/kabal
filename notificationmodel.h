@@ -40,6 +40,7 @@ class NotificationModel: public QAbstractListModel
 {
 	Q_OBJECT
 	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
+	Q_PROPERTY( bool truncateLog READ truncateLog WRITE setTruncateLog)
 	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
 	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled NOTIFY notificationsToggled)
 	Q_PROPERTY( int minimalTimeout READ minimalTimeout WRITE setMinimalTimeout )
@@ -83,6 +84,8 @@ public:
 
 	QString logFilePath() { return m_logFilePath; }
 	void setLogFilePath(const QString &path);
+	bool truncateLog() {return m_truncateLog;}
+	void setTruncateLog(bool trunc) {m_truncateLog = trunc;}
 	QImage getImage(qint32 id);
 
 	void setMinimalTimeout(int t);
@@ -124,6 +127,7 @@ private:
 	QFile *logDevice;
 	QString m_logFilePath;
 	int m_minimalTimeout;
+	bool m_truncateLog;
 };
 
 

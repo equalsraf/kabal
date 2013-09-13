@@ -97,7 +97,8 @@ NotificationModel::NotificationModel(QObject *parent)
 	m_running(true),
 	m_notificationsDisabled(false),
 	logFile(0), logDevice(0),
-	m_minimalTimeout(7000)
+	m_minimalTimeout(7000),
+	m_truncateLog(true)
 {
 	qDBusRegisterMetaType<ImageData>();
 	QHash<int, QByteArray> roles;
@@ -127,8 +128,15 @@ void NotificationModel::setLogFilePath(const QString& path)
 
 	QDir().mkpath(QFileInfo(path).dir().absolutePath());
 
+	QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
+	if ( m_truncateLog ) {
+		mode != QIODevice::Truncate;
+	} else {
+		mode |= QIODevice::Append;
+	}
+
 	logDevice = new QFile(logFilePath(), this);
-	if ( !logDevice->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append) ) {
+	if ( !logDevice->open(mode) ) {
 		qDebug() << "Unable to open logFile";
 	} else {
 		logFile = new QTextStream(logDevice);
@@ -314,12 +322,12 @@ void NotificationModel::log(struct NotificationModel::notification& n)
 		return;
 	}
 
-	*logFile << QDateTime::currentDateTime().toString() << QString(" \"%1\" from *%2*: %3\n").arg(n.summary).arg(n.app).arg(n.body);
+	*logFile << QDateTime::currentDateTime().toString() << QString(" \"%1\" from *%2*: %3\n").arg(n.summary.replace("\n", " ")).arg(n.app).arg(n.body.replace("\n", " "));
 	logFile->flush();
 	logDevice->flush();
 }
 
-int NotificationModel::rowCount(const QModelIndex& index) const
+int NotificationModel::rowCount(const QModelIndex& ) const
 {
 	if ( m_notificationsDisabled ) {
 		return criticalNotificationsOrder.size();

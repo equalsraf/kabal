@@ -41,8 +41,10 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 
 	screenCountChanged(desktop->screenCount());
 
+	model.setTruncateLog(settings.value("trunclog", true).toBool());
 	model.setLogFilePath(
-		QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("log"));
+		settings.value("log", QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("log")).toString()
+		);
 
 	connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
 			&model, SLOT(CloseAllNotifications()));
