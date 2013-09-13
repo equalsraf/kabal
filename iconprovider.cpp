@@ -1,5 +1,8 @@
 #include "iconprovider.h"
 #include <QtGui>
+
+QStringList IconProvider::extensions = QStringList() << "png" << "jpg" << "xpm" << "ico";
+
 IconProvider::IconProvider()
 :QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
 {
@@ -16,7 +19,7 @@ QPixmap IconProvider::requestPixmap(const QString& id, QSize *size, const QSize 
 	} else {
 		// This only works on *nix/X11
 		QString path = QDir("/usr/share/pixmaps/").absoluteFilePath(id + ".");
-		foreach (QString ext, QStringList() << "png" << "jpg" << "xpm" << "ico"  ) {
+		foreach (QString ext, IconProvider::extensions  ) {
 			if ( QFile::exists(path + ext) ) {
 				icon = QIcon(path + ext);
 				break;

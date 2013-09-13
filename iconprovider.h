@@ -8,9 +8,8 @@ class IconProvider: public QDeclarativeImageProvider
 public:
 	IconProvider();
 	QPixmap requestPixmap(const QString& id, QSize *size, const QSize &requestedSize);
-
-
-
+protected:
+	static QStringList extensions;
 };
 
 #endif
