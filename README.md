@@ -52,12 +52,14 @@ Kabal will read settings from $HOME/.kabal/config - but there aren't
 many options yet, other than the widget position. Here are 
 the default settings
 
-    log = /home/user/.kabal/log
-    trunclog = true
-    x = 10
-    y = 10
-    corner = topleft
-    mintime = 7000
+    log = /home/user/.kabal/log		; the location of your log
+    trunclog = true			; erase log on start
+    corner = topleft			; widget position, i.e. topright,
+    					; bottomright, bottomleft
+    x = 10				; x position (relative to corner)
+    y = 10				; y position
+    mintime = 7000			; minimum time (ms) a notification will
+    					; be displayed
 
 # TODO 
 
