@@ -130,7 +130,7 @@ void NotificationModel::setLogFilePath(const QString& path)
 
 	QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
 	if ( m_truncateLog ) {
-		mode != QIODevice::Truncate;
+		mode |= QIODevice::Truncate;
 	} else {
 		mode |= QIODevice::Append;
 	}
