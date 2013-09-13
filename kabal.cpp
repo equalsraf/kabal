@@ -1,9 +1,9 @@
-#include <QDeclarativeView>
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 #include "kabal.h"
 #include "iconprovider.h"
 #include "imageprovider.h"
+#include "declarativeview.h"
 
 
 Kabal::Kabal(const QUrl& source, QObject *parent)
@@ -51,7 +51,7 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 QDeclarativeView* Kabal::createWidget()
 {
 	// Widget
-	QDeclarativeView *view = new QDeclarativeView;
+	DeclarativeView *view = new DeclarativeView;
 	view->engine()->addImageProvider(QLatin1String("icons"), new IconProvider());
 	view->engine()->addImageProvider(QLatin1String("images"), new ImageProvider(&model));
 

@@ -12,8 +12,8 @@ QT += dbus declarative
 RESOURCES = data.qrc
 
 # Input
-HEADERS += notificationmodel.h iconprovider.h notificationtimeout.h kabal.h imageprovider.h
-SOURCES += main.cpp notificationmodel.cpp iconprovider.cpp notificationtimeout.cpp kabal.cpp imageprovider.cpp
+HEADERS += notificationmodel.h iconprovider.h notificationtimeout.h kabal.h imageprovider.h declarativeview.h
+SOURCES += main.cpp notificationmodel.cpp iconprovider.cpp notificationtimeout.cpp kabal.cpp imageprovider.cpp declarativeview.cpp
 
 OTHER_FILES += \
     qml/Notification.qml \

@@ -26,6 +26,12 @@ Rectangle {
 		}
 	}
 
+	Connections {
+		target: Window
+		onMouseWheelUp: view.incrementCurrentIndex()
+		onMouseWheelDown: view.decrementCurrentIndex()
+	}
+
 	MouseArea {
 		id: mouse
 		hoverEnabled: true
