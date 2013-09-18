@@ -44,6 +44,7 @@ class NotificationModel: public QAbstractListModel
 	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
 	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled NOTIFY notificationsToggled)
 	Q_PROPERTY( int minimalTimeout READ minimalTimeout WRITE setMinimalTimeout )
+	Q_PROPERTY( bool persistence READ persistence WRITE setPersistence)
 
 	struct notification {
 		quint32 uid;
@@ -91,6 +92,9 @@ public:
 	void setMinimalTimeout(int t);
 	int minimalTimeout() {return m_minimalTimeout;}
 
+	void setPersistence(bool on);
+	bool persistence();
+
 public slots:
 	QStringList GetCapabilities();
 	void CloseNotification(quint32 id, quint32 reason=3);
@@ -128,6 +132,7 @@ private:
 	QString m_logFilePath;
 	int m_minimalTimeout;
 	bool m_truncateLog;
+	bool m_persistence;
 };
 
 

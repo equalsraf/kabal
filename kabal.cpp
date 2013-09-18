@@ -47,6 +47,11 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 	model.setLogFilePath(
 		settings.value("log", QDir(QDir::home().absoluteFilePath(".kabal")).absoluteFilePath("log")).toString()
 		);
+	if ( QApplication::arguments().contains("--persistence") ) {
+		model.setPersistence(true);
+	} else {
+		model.setPersistence(settings.value("persistence", false).toBool());
+	}
 
 	connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
 			&model, SLOT(CloseAllNotifications()));

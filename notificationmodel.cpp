@@ -98,7 +98,8 @@ NotificationModel::NotificationModel(QObject *parent)
 	m_notificationsDisabled(false),
 	logFile(0), logDevice(0),
 	m_minimalTimeout(7000),
-	m_truncateLog(true)
+	m_truncateLog(true),
+	m_persistence(false)
 {
 	qDBusRegisterMetaType<ImageData>();
 	QHash<int, QByteArray> roles;
@@ -149,7 +150,11 @@ void NotificationModel::setLogFilePath(const QString& path)
 
 QStringList NotificationModel::GetCapabilities() 
 {
-	return QStringList() << "body" << "actions";
+	QStringList cap = QStringList() << "body" << "actions";
+	if ( persistence() ) {
+		cap << "persistence";
+	}
+	return cap;
 }
 
 void NotificationModel::CloseNotification(quint32 id, quint32 reason)
@@ -238,7 +243,18 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 		const QStringList& actionsArr, const QMap<QString, QVariant> &hints,
 		int timeout) {
 
-	if ( timeout < m_minimalTimeout )  {
+	bool critical = (hints.value("urgency").toUInt() == 2);
+
+	/* if persistence is ON we assume all notifications are resident
+	 * unless the transient hint is true. The resident hint is always
+	 * ignored
+	 */
+	bool transient = (hints.value("transient").toBool() == true);
+	//bool resident = (hints.value("resident").toBool() == true);
+
+	if ( persistence() && !transient ) {
+		timeout = -1;
+	} else if ( timeout < m_minimalTimeout )  {
 		timeout = m_minimalTimeout;
 	}
 
@@ -255,8 +271,6 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 	// Add notification
 	quint32 uid = idcounter;
 	incrementCounter();
-
-	bool critical =  (hints.value("urgency").toUInt() == 2);
 
 	// Extract image-data
 	QString iconPath;
@@ -302,7 +316,7 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 
 	emit notificationCountChanged(notlist.size());
 
-	if ( timeout != 0 ) {
+	if ( timeout > 0 ) {
 		new NotificationTimeout(this, uid, timeout);
 	}
 
@@ -433,4 +447,15 @@ void NotificationModel::setMinimalTimeout(int t)
 		m_minimalTimeout = t;
 	}
 }
+
+void NotificationModel::setPersistence(bool on)
+{
+	m_persistence = on;
+}
+
+bool NotificationModel::persistence()
+{
+	return m_persistence;
+}
+
 
