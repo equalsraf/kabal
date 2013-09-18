@@ -35,8 +35,14 @@ QPixmap IconProvider::requestPixmap(const QString& id, QSize *size, const QSize 
 		icon = QIcon(":icons/dialog-information.png");
 	}
 
-	*size = icon.actualSize(requestedSize);
-	QPixmap pix = icon.pixmap(requestedSize);
+	QSize rsize = requestedSize;
+	if ( !rsize.isValid() ) {
+		// FIXME: can we find a better default?
+		rsize = QSize(48, 48);
+	}
+
+	*size = icon.actualSize(rsize);
+	QPixmap pix = icon.pixmap(rsize);
 
 	if ( !pix.isNull() ) {
 		return pix;
