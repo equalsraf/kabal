@@ -244,15 +244,12 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 		int timeout) {
 
 	bool critical = (hints.value("urgency").toUInt() == 2);
+	bool transient = hints.value("transient", false).toBool();
+	bool resident = hints.value("resident", false).toBool();
 
-	/* if persistence is ON we assume all notifications are resident
-	 * unless the transient hint is true. The resident hint is always
-	 * ignored
-	 */
-	bool transient = (hints.value("transient").toBool() == true);
-	//bool resident = (hints.value("resident").toBool() == true);
-
-	if ( persistence() && !transient ) {
+	if ( resident ) {
+		timeout = -1;
+	} else if ( persistence() && !transient ) {
 		timeout = -1;
 	} else if ( timeout < m_minimalTimeout )  {
 		timeout = m_minimalTimeout;
