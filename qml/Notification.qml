@@ -12,7 +12,7 @@ Rectangle {
 	radius: 5
 	anchors.margins: 5
 	anchors.fill: parent
-	color: style.backgroundColor
+	color: style.backgroundColor2
 
 	Image {
 		id: iconImage

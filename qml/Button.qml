@@ -2,17 +2,20 @@ import QtQuick 1.1
 
 Rectangle {
 	id: button
+	Style { id: style}
+
 	property alias label: text.text
 	signal clicked
-	height: text.height
-	width: text.width
-
-	Style { id: style}
-	color: style.backgroundColor2
+	height: text.paintedHeight + 32
+	width: text.paintedWidth + 32
+	border.width: 1
+	border.color: style.borderColor2
+	color: style.backgroundColor
 
 	Text {
 		id: text
 		color: style.textColor
+		anchors.centerIn: button
 	}
 
 	MouseArea {
@@ -23,7 +26,7 @@ Rectangle {
 			button.color = style.highlight
 		}
 		onExited: {
-			button.color = style.backgroundColor2
+			button.color = style.backgroundColor
 		}
 		onClicked: button.clicked()
 	}
