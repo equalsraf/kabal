@@ -324,6 +324,7 @@ quint32 NotificationModel::Critical(const QString& app, const QString& summary, 
 {
 	QMap<QString, QVariant> hints;
 	hints.insert("urgency", 2);
+	hints.insert("transient", true);
 	return Notify(app, 0, "", summary, body, QStringList(), hints , timeout );
 }
 
