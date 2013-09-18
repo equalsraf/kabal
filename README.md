@@ -60,6 +60,8 @@ the default settings
     y = 10				; y position
     mintime = 7000			; minimum time (ms) a notification will
     					; be displayed
+    persistence = false			; if true notifications never timeout
+    					; also works as cmd arg --persistence
 
 # TODO 
 
