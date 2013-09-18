@@ -150,7 +150,7 @@ void NotificationModel::setLogFilePath(const QString& path)
 
 QStringList NotificationModel::GetCapabilities() 
 {
-	QStringList cap = QStringList() << "body" << "actions";
+	QStringList cap = QStringList() << "body" << "body-markup" << "actions";
 	if ( persistence() ) {
 		cap << "persistence";
 	}
