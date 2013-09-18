@@ -9,6 +9,9 @@ To build and run
     $ make
     $ ./kabal
 
+If you are already running a notification server you will need to disable it
+first.
+
 # What makes Kabal different from XYZ?
 
 Hopefully it is more sane by default than most other notification servers out there. My own
@@ -52,16 +55,16 @@ Kabal will read settings from $HOME/.kabal/config - but there aren't
 many options yet, other than the widget position. Here are 
 the default settings
 
-    log = /home/user/.kabal/log		; the location of your log
-    trunclog = true			; erase log on start
-    corner = topleft			; widget position, i.e. topright,
-    					; bottomright, bottomleft
-    x = 10				; x position (relative to corner)
-    y = 10				; y position
-    mintime = 7000			; minimum time (ms) a notification will
-    					; be displayed
-    persistence = false			; if true notifications never timeout
-    					; also works as cmd arg --persistence
+    log = /home/user/.kabal/log         ; the location of your log
+    trunclog = true                     ; erase log on start
+    corner = topleft                    ; widget position, i.e. topright,
+                                        ; bottomright, bottomleft
+    x = 10                              ; x position (relative to corner)
+    y = 10                              ; y position
+    mintime = 7000                      ; minimum time (ms) a notification will
+                                        ; be displayed
+    persistence = false                 ; if true notifications never timeout
+                                        ; also works as cmd arg --persistence
 
 # TODO 
 
