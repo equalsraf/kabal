@@ -167,20 +167,22 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 						criticalNotificationsOrder:
 						notificationsOrder;
 	int idx = notlist.indexOf(id);
-	if ( idx == -1) {
-		return;
+	if ( idx != -1) {
+		beginRemoveRows(QModelIndex(), idx, idx);
 	}
-	beginRemoveRows(QModelIndex(), idx, idx);
-	notificationsOrder.removeOne(id);
 
+	notificationsOrder.removeOne(id);
 	struct notification n = notifications.take(id);
 	if ( n.critical) {
 		criticalNotificationsOrder.removeOne(id);
 	}
-	endRemoveRows();
 
 	emit notificationClosed(id, reason);
-	emit notificationCountChanged(notlist.size());
+	if ( idx != -1) {
+		endRemoveRows();
+		emit notificationCountChanged(notlist.size());
+	}
+
 }
 
 void NotificationModel::CloseAllNotifications()
