@@ -163,6 +163,7 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 		return;
 	}
 
+	int curHiddenCount = hiddenNotificationCount();
 	const QList<quint32>& notlist = m_notificationsDisabled ?
 						criticalNotificationsOrder:
 						notificationsOrder;
@@ -183,6 +184,9 @@ void NotificationModel::CloseNotification(quint32 id, quint32 reason)
 		emit notificationCountChanged(notlist.size());
 	}
 
+	if (curHiddenCount != hiddenNotificationCount()) {
+		emit hiddenNotificationCountChanged(hiddenNotificationCount());
+	}
 }
 
 void NotificationModel::CloseAllNotifications()
@@ -302,6 +306,7 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 	// Write to log file
 	log(n);
 
+	int curHiddenCount = hiddenNotificationCount();
 	// The model is about to change
 	bool modelChanged = (critical || !m_notificationsDisabled );
 
@@ -321,6 +326,10 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 	if ( modelChanged ) {
 		endInsertRows();
 		emit notificationCountChanged(notlist.size());
+	}
+
+	if (curHiddenCount != hiddenNotificationCount()) {
+		emit hiddenNotificationCountChanged(hiddenNotificationCount());
 	}
 
 	if ( timeout > 0 ) {
@@ -355,6 +364,19 @@ int NotificationModel::rowCount(const QModelIndex& ) const
 		return criticalNotificationsOrder.size();
 	} else {	
 		return notificationsOrder.size();
+	}
+}
+
+/**
+ * Return the ammount of notifications that are hidden, i.e.
+ * non-critical notifications, when notifications were disabled
+ */
+int NotificationModel::hiddenNotificationCount()
+{
+	if ( m_notificationsDisabled ) {
+		return notificationsOrder.size() - criticalNotificationsOrder.size();
+	} else {
+		return 0;
 	}
 }
 

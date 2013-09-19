@@ -42,6 +42,7 @@ class NotificationModel: public QAbstractListModel
 	Q_PROPERTY( QString logFilePath READ logFilePath WRITE setLogFilePath)
 	Q_PROPERTY( bool truncateLog READ truncateLog WRITE setTruncateLog)
 	Q_PROPERTY( int notificationCount READ rowCount NOTIFY notificationCountChanged )
+	Q_PROPERTY( int hiddenNotificationCount READ hiddenNotificationCount NOTIFY hiddenNotificationCountChanged )
 	Q_PROPERTY( bool notificationsDisabled READ notificationsDisabled WRITE setNotificationsDisabled NOTIFY notificationsToggled)
 	Q_PROPERTY( int minimalTimeout READ minimalTimeout WRITE setMinimalTimeout )
 	Q_PROPERTY( bool persistence READ persistence WRITE setPersistence)
@@ -79,6 +80,8 @@ public:
 	virtual int rowCount(const QModelIndex& = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex&, int) const;
 
+	int hiddenNotificationCount();
+
 	bool notificationsDisabled();
 
 	QString htmlToPlainText(const QString&);
@@ -114,6 +117,7 @@ signals:
 	void notificationClosed(quint32 id, quint32 reason);
 	void ActionInvoked(quint32 id, const QString& reason);
 	void notificationCountChanged(int count);
+	void hiddenNotificationCountChanged(int count);
 	void notificationsToggled(bool);
 
 protected:
