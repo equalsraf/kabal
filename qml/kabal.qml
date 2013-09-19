@@ -20,6 +20,7 @@ Rectangle {
 				Window.hide();
 			} else if (Window.visible === false) {
 				Window.show();
+				view.currentIndex = view.count-1;
 			} else if (mouse.containsMouse === false) {
 				view.currentIndex = view.count-1;
 			}
