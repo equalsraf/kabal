@@ -302,18 +302,26 @@ quint32 NotificationModel::Notify(const QString& app, quint32 replace, const QSt
 	// Write to log file
 	log(n);
 
+	// The model is about to change
+	bool modelChanged = (critical || !m_notificationsDisabled );
+
 	const QList<quint32>& notlist = m_notificationsDisabled ?
 						criticalNotificationsOrder:
 						notificationsOrder;
-	beginInsertRows(QModelIndex(), notlist.size(), notlist.size());
+	if ( modelChanged ) {
+		beginInsertRows(QModelIndex(), notlist.size(), notlist.size());
+	}
+
 	notificationsOrder.append(uid);
 	if ( critical ) {
 		criticalNotificationsOrder.append(uid);
 	}
 	notifications.insert(uid, n);
-	endInsertRows();
 
-	emit notificationCountChanged(notlist.size());
+	if ( modelChanged ) {
+		endInsertRows();
+		emit notificationCountChanged(notlist.size());
+	}
 
 	if ( timeout > 0 ) {
 		new NotificationTimeout(this, uid, timeout);
