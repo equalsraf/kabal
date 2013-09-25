@@ -1,8 +1,5 @@
-# KABAL 1 "Kabal 0.1"
+# KABAL(1) -- Kabal notification server
 
-## KABAL
-
-kabal - a notification server for X11
 
 ## SYNOPSIS
 
