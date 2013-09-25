@@ -1,0 +1,49 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KABAL" "" "September 2013" "" ""
+.
+.SH "KABAL"
+kabal \- a notification server for X11
+.
+.SH "SYNOPSIS"
+kabal [\-\-persistence]
+.
+.SH "DESCRIPTION"
+kabal is a notification server for X11\. It receives, manages, and displays desktop notifications\.
+.
+.SH "OPTIONS"
+\-\-persistence Run kabal in persitent mode\. In this mode, all notifications are persistent, meaning that by default they are never removed by timeout, unless the user or an application removes them\.
+.
+.SH "FILES"
+\fI~/\.kabal/config\fR User config file for kabal
+.
+.P
+\fI~/\.kabal/log\fR Log file for kabal notifications
+.
+.SH "CONFIG FILE"
+The configuration file is an sectionless ini file
+.
+.P
+\fIlog\fR The path of your log file (default: /home/username/\.kabal/log)
+.
+.P
+\fItrunclog\fR Truncate the log file on start (default: true)
+.
+.P
+\fIcorner\fR Place the notification widget at a given corner \- topleft, topright, bottomleft, bottomright (default: topleft)
+.
+.P
+\fIx\fR x\-axis distance from the \fIcorner\fR (default:10)
+.
+.P
+\fIy\fR y\-axis distance from the \fIcorner\fR (default:10)
+.
+.P
+\fImintime\fR The minimum time(ms) a notification should be visible for (default: 7000)
+.
+.P
+\fIpersistence\fR If true notifications never timeout this can be overriden from the command line (default: false)
+.
+.SH "AUTHORS"
+Written by Rui Abreu Ferreira, after he got tired of whining about all other notification servers\.

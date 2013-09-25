@@ -1,5 +1,5 @@
 Makefile
-kabal
+/kabal
 .*.sw[po]
 *.o
 moc_*.cpp
