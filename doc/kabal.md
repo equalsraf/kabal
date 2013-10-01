@@ -27,7 +27,7 @@ desktop notifications.
 
 ## CONFIG FILE
 
-The configuration file is an sectionless ini file
+The configuration file is a sectionless ini file
 
 *log*
   The path of your log file (default: /home/username/.kabal/log)
@@ -51,6 +51,12 @@ The configuration file is an sectionless ini file
 *persistence*
   If true notifications never timeout this can be overriden from the command
   line (default: false)
+
+Here is an example config file
+
+    x = 10
+    y = 25
+    corner = topright
 
 
 ## AUTHORS

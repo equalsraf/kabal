@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KABAL" "1" "September 2013" "" ""
+.TH "KABAL" "1" "October 2013" "" ""
 .
 .SH "NAME"
 \fBKABAL\fR \- Kabal notification server
@@ -22,7 +22,7 @@ kabal is a notification server for X11\. It receives, manages, and displays desk
 \fI~/\.kabal/log\fR Log file for kabal notifications
 .
 .SH "CONFIG FILE"
-The configuration file is an sectionless ini file
+The configuration file is a sectionless ini file
 .
 .P
 \fIlog\fR The path of your log file (default: /home/username/\.kabal/log)
@@ -44,6 +44,21 @@ The configuration file is an sectionless ini file
 .
 .P
 \fIpersistence\fR If true notifications never timeout this can be overriden from the command line (default: false)
+.
+.P
+Here is an example
+.
+.IP "" 4
+.
+.nf
+
+x = 10
+y = 25
+corner = topright
+.
+.fi
+.
+.IP "" 0
 .
 .SH "AUTHORS"
 Written by Rui Abreu Ferreira, after he got tired of whining about all other notification servers\.
