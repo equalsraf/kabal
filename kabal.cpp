@@ -4,6 +4,7 @@
 #include "iconprovider.h"
 #include "imageprovider.h"
 #include "declarativeview.h"
+#include <QxtGlobalShortcut>
 
 
 Kabal::Kabal(const QUrl& source, QObject *parent)
@@ -34,6 +35,10 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 
 	tray.setContextMenu(&menu);
 	tray.show();
+
+	QxtGlobalShortcut *shortcut = new QxtGlobalShortcut( QKeySequence("CTRL+SHIFT+n"), this);
+	connect(shortcut, SIGNAL(activated()),
+		&model, SLOT(toggleNotifications()));
 
 	QDesktopWidget *desktop = QApplication::desktop();
 	connect(desktop, SIGNAL(screenCountChanged(int)),

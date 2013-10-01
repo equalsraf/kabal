@@ -442,6 +442,11 @@ bool NotificationModel::notificationsDisabled()
 	return m_notificationsDisabled;
 }
 
+void NotificationModel::toggleNotifications()
+{
+	setNotificationsDisabled(!m_notificationsDisabled);
+}
+
 /**
  * Utility function to convert HTML to plain text
  */

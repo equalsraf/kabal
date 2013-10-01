@@ -7,6 +7,8 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
+CONFIG += qxt
+QXT += gui
 QT += dbus declarative
 
 RESOURCES = data.qrc

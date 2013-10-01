@@ -107,6 +107,7 @@ public slots:
 			const QStringList& actions, const QMap<QString, QVariant> &hints,
 			int timeout);
 	void setNotificationsDisabled(bool);
+	void toggleNotifications();
 
 	quint32 Critical(const QString& app, const QString& summary, const QString& body, int timeout);
 	void invokeAction(quint32 uid, const QString& action);
