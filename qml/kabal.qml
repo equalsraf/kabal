@@ -19,11 +19,16 @@ Rectangle {
 				// Nothing to show
 				Window.hide();
 			} else if (Window.visible === false) {
+				view.positionViewAtIndex(view.count-1, ListView.Contain);
 				Window.show();
-				view.currentIndex = view.count-1;
 			} else if (mouse.containsMouse === false) {
+				// Animate notification switch
 				view.currentIndex = view.count-1;
 			}
+		}
+		onNotificationsToggled: {
+			// On toggle we want to quickly jump to the last position
+			view.positionViewAtIndex(view.count-1, ListView.Contain);
 		}
 	}
 
