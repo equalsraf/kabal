@@ -60,3 +60,7 @@ for more details.
 * Settings in the notification widget
 * Fix animations when enabling/disabling/removing notifications
 
+# License
+
+This code available under the New (3-clause) BSD license
+
