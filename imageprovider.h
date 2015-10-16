@@ -1,10 +1,10 @@
 #ifndef KABAL_IMAGEPROVIDER
 #define KABAL_IMAGEPROVIDER
 
-#include <QDeclarativeImageProvider>
+#include <QQuickImageProvider>
 #include "notificationmodel.h"
 
-class ImageProvider: public QDeclarativeImageProvider
+class ImageProvider: public QQuickImageProvider
 {
 public:
 	ImageProvider(NotificationModel *);

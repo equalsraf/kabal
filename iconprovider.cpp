@@ -4,7 +4,7 @@
 QStringList IconProvider::extensions = QStringList() << "png" << "jpg" << "xpm" << "ico";
 
 IconProvider::IconProvider()
-:QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+:QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
 }
 

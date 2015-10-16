@@ -2,7 +2,9 @@
 #define KA
 
 #include <QtGui>
-#include <QDeclarativeView>
+#include <QQuickView>
+#include <QSystemTrayIcon>
+#include <QMenu>
 
 #include "notificationmodel.h"
 
@@ -14,7 +16,7 @@ public:
 	bool isRunning() { return model.isRunning(); }
 
 protected:
-	QDeclarativeView* createWidget();
+	QQuickView* createWidget();
 
 public slots:
 	void notificationsDisabled(bool);
@@ -29,7 +31,7 @@ private:
 	QMenu menu;
 	QSystemTrayIcon tray;
 	NotificationModel model;
-	QList <QDeclarativeView*> widgets;
+	QList <QQuickView*> widgets;
 	QFileSystemWatcher fsWatcher;
 	QSettings settings;
 	QIcon trayIcon, trayIconDisabled;

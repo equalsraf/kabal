@@ -2,10 +2,11 @@
 #include <QWheelEvent>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QScreen>
 
 
-DeclarativeView::DeclarativeView(QWidget *parent)
-:QDeclarativeView(parent)
+DeclarativeView::DeclarativeView(QWindow *parent)
+:QQuickView(parent)
 {
 
 }
@@ -21,22 +22,11 @@ void DeclarativeView::wheelEvent(QWheelEvent *ev)
 
 int DeclarativeView::screenCount()
 {
-	return QApplication::desktop()->screenCount();
-}
-
-int DeclarativeView::screenNumber()
-{
-	return QApplication::desktop()->screenNumber(this);
+	return QGuiApplication::screens().size();
 }
 
 QRect DeclarativeView::screenGeometry()
 {
-	return QApplication::desktop()->screenGeometry(this);
+	return screen()->availableGeometry();
 }
-
-bool DeclarativeView::primaryScreen()
-{
-	return screenNumber() == QApplication::desktop()->primaryScreen();
-}
-
 

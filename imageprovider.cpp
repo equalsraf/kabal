@@ -1,7 +1,7 @@
 #include "imageprovider.h"
 #include <QtGui>
 ImageProvider::ImageProvider(NotificationModel *model)
-:QDeclarativeImageProvider(QDeclarativeImageProvider::Image), model(model)
+:QQuickImageProvider(QQuickImageProvider::Image), model(model)
 {
 }
 

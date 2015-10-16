@@ -72,6 +72,7 @@ public:
 		ActionKeysRole,
 		ActionNamesRole,
 	};
+	virtual QHash<int, QByteArray> roleNames() const;
 
 	NotificationModel(QObject *parent=0);
 	bool isRunning() { return m_running; }

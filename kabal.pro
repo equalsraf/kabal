@@ -3,11 +3,10 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
 
-QT += dbus declarative
+QT += dbus quick widgets
 
 RESOURCES = data.qrc
 

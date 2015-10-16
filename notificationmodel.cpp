@@ -92,6 +92,20 @@ uint NotificationModelAdaptor::Notify(const QString &app_name, uint replaces_id,
 ////////////////////////
 
 
+QHash<int, QByteArray> NotificationModel::roleNames() const
+{
+	QHash<int, QByteArray> roles;
+	roles[ApplicationRole] = "application";
+	roles[IconRole] = "icon";
+	roles[SummaryRole] = "summary";
+	roles[BodyRole] = "body";
+	roles[UidRole] = "uid";
+	roles[CriticalRole] = "critical";
+	roles[ActionKeysRole] = "actionkeys";
+	roles[ActionNamesRole] = "actionnames";
+	return roles;
+}
+
 NotificationModel::NotificationModel(QObject *parent)
 :QAbstractListModel(parent), idcounter(1),
 	m_running(true),
@@ -102,16 +116,6 @@ NotificationModel::NotificationModel(QObject *parent)
 	m_persistence(false)
 {
 	qDBusRegisterMetaType<ImageData>();
-	QHash<int, QByteArray> roles;
-	roles[ApplicationRole] = "application";
-	roles[IconRole] = "icon";
-	roles[SummaryRole] = "summary";
-	roles[BodyRole] = "body";
-	roles[UidRole] = "uid";
-	roles[CriticalRole] = "critical";
-	roles[ActionKeysRole] = "actionkeys";
-	roles[ActionNamesRole] = "actionnames";
-	setRoleNames(roles);
 
 	new NotificationModelAdaptor(this);
 	QDBusConnection::sessionBus().registerObject("/org/freedesktop/Notifications", this);

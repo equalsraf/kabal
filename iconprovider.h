@@ -1,9 +1,9 @@
 #ifndef KABAL_ICONPROVIDER
 #define KABAL_ICONPROVIDER
 
-#include <QDeclarativeImageProvider>
+#include <QQuickImageProvider>
 
-class IconProvider: public QDeclarativeImageProvider
+class IconProvider: public QQuickImageProvider
 {
 public:
 	IconProvider();

@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "kabal.h"
+#include <QApplication>
 
 int main(int argc, char **argv)
 {

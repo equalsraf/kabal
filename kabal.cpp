@@ -1,5 +1,7 @@
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QDesktopWidget>
+#include <QApplication>
 #include "kabal.h"
 #include "iconprovider.h"
 #include "imageprovider.h"
@@ -57,14 +59,14 @@ Kabal::Kabal(const QUrl& source, QObject *parent)
 			&model, SLOT(CloseAllNotifications()));
 }
 
-QDeclarativeView* Kabal::createWidget()
+QQuickView* Kabal::createWidget()
 {
 	// Widget
 	DeclarativeView *view = new DeclarativeView;
 	view->engine()->addImageProvider(QLatin1String("icons"), new IconProvider());
 	view->engine()->addImageProvider(QLatin1String("images"), new ImageProvider(&model));
 
-	view->setWindowFlags(Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
+	view->setFlags(Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
 
 	// Export methods
 	view->rootContext()->setContextProperty("notificationModel", &model);
@@ -86,7 +88,7 @@ void Kabal::repositionWidget(int i)
 		return;
 	}
 
-	QWidget *W = widgets.at(i);
+	QWindow *W = widgets.at(i);
 	if ( W == NULL ) {
 		return;
 	}
@@ -114,17 +116,17 @@ void Kabal::repositionWidget(int i)
 
 	switch( corner_opt ) {
 	case Qt::TopRightCorner:
-		W->move(screen.right() - W->width() - x, screen.top() + y);
+		W->setPosition(screen.right() - W->width() - x, screen.top() + y);
 		break;
 	case Qt::BottomLeftCorner:
-		W->move(screen.left() + x, screen.bottom()- W->height() - y);
+		W->setPosition(screen.left() + x, screen.bottom()- W->height() - y);
 		break;
 	case Qt::BottomRightCorner:
-		W->move(screen.right() - W->width() - x, screen.bottom()- W->height() - y);
+		W->setPosition(screen.right() - W->width() - x, screen.bottom()- W->height() - y);
 		break;
 	default:
 		// default is top left corner
-		W->move(screen.left() + x, screen.top() + y);
+		W->setPosition(screen.left() + x, screen.top() + y);
 	}
 
 }
@@ -168,7 +170,7 @@ void Kabal::notificationsDisabled(bool disabled)
 void Kabal::systrayActivated(QSystemTrayIcon::ActivationReason why)
 {
 	if ( why != QSystemTrayIcon::Trigger && model.rowCount()) {
-		foreach (QWidget *w, widgets) {
+		foreach (QWindow *w, widgets) {
 			w->show();
 		}
 	}
